@@ -163,6 +163,10 @@ export function insertItem(
     sourceId: string;
     url: string;
     publishedAt: string;
+    publishedAtPrecision?: "day" | "second";
+    reactions?: number;
+    replies?: number;
+    views?: number;
     authorId?: string;
     private?: boolean;
   },
@@ -215,6 +219,10 @@ export function insertItem(
     sourceId: input.sourceId,
     url: input.private ? "" : safePublicUrl(input.url),
     publishedAt: input.publishedAt,
+    publishedAtPrecision: input.publishedAtPrecision,
+    reactions: input.reactions,
+    replies: input.replies,
+    views: input.views,
     ingestedAt: new Date().toISOString(),
     authorHash: input.authorId
       ? createHash("sha256")
@@ -255,6 +263,7 @@ export function safePublicUrl(value: string) {
           "thread",
           "appeal",
           "question",
+          "reply",
         ].includes(key) ||
         !/^[a-z0-9_-]{1,100}$/i.test(u.searchParams.get(key) || "")
       )
@@ -300,7 +309,8 @@ export function scope(state: State, user: User): State {
       ),
     sources: state.sources.map((s) => ({
       ...s,
-      url: "",
+      cursor: undefined,
+      url: user.role === "admin" ? s.url : "",
       error: s.error
         ? "Ошибка сбора. Проверьте разрешение, доступность источника и журнал сервера."
         : undefined,

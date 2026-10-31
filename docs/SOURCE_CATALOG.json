@@ -1,0 +1,80 @@
+[
+  {
+    "name": "ПАВЛОДАРЭНЕРГО · обращения",
+    "type": "HTML",
+    "url": "https://pavlodarenergo.kz/ru/blog-rukovoditelya/obrashhenie.html",
+    "city": "Павлодар",
+    "region": "Павлодарская",
+    "tags": "ЖКХ,отопление,электроснабжение",
+    "keywords": "отопл,тепло,электро,жкх",
+    "status": "parser-tested",
+    "permission": false
+  },
+  {
+    "name": "Открытый диалог",
+    "type": "HTML",
+    "url": "https://dialog.egov.kz/blogs/all-questions",
+    "city": "",
+    "region": "Казахстан",
+    "tags": "жильё,обращения",
+    "keywords": "жиль,тұрғын",
+    "status": "detail-parser-tested",
+    "permission": false
+  },
+  {
+    "name": "Типичный Павлодар · VK",
+    "type": "VK",
+    "discoveryUrl": "https://vk.com/tipavlo",
+    "city": "Павлодар",
+    "region": "Павлодарская",
+    "tags": "город,ЖКХ",
+    "requires": "URL открытого сообщества или конкретного поста, допустимый API token, права и основание обработки",
+    "status": "candidate",
+    "permission": false
+  },
+  {
+    "name": "Акимат Павлодарской области · Instagram",
+    "type": "Instagram",
+    "discoveryUrl": "https://www.instagram.com/pavlodar_region/",
+    "city": "",
+    "region": "Павлодарская",
+    "tags": "акимат,город,ЖКХ",
+    "requires": "Professional account подключён владельцем, Instagram Login token, post URL + Media ID",
+    "evidence": "https://www.gov.kz/memleket/entities/pavlodar/press/news/details/590748?lang=ru",
+    "status": "candidate",
+    "permission": false
+  },
+  {
+    "name": "Pavlodar Region · Facebook",
+    "type": "Facebook",
+    "discoveryUrl": "https://www.facebook.com/pavlodarregion/",
+    "city": "",
+    "region": "Павлодарская",
+    "tags": "акимат,город,ЖКХ",
+    "requires": "Page token и права, Post ID",
+    "status": "candidate-login-gated",
+    "permission": false
+  },
+  {
+    "name": "Павлодар онлайн · Telegram",
+    "type": "Telegram",
+    "discoveryUrl": "https://t.me/pavlodaronline",
+    "city": "Павлодар",
+    "region": "Павлодарская",
+    "tags": "СМИ,город",
+    "requires": "отдельный бот добавлен владельцем, согласия авторов на AI; наличие web-preview не заменяет их",
+    "status": "public-preview-only",
+    "permission": false
+  },
+  {
+    "name": "PavlodarNews · инфраструктура",
+    "type": "RSS",
+    "url": "https://pavlodarnews.kz/ru/rss/category/infrastruktura",
+    "city": "",
+    "region": "Павлодарская",
+    "tags": "СМИ,инфраструктура",
+    "requires": "проверка наполнения и основания использования; новости не выдавать за обращения жителей",
+    "status": "published-feed-content-not-confirmed",
+    "permission": false
+  }
+]

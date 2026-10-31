@@ -20,6 +20,10 @@ export interface Item extends Analysis {
   text: string;
   url: string;
   publishedAt: string;
+  publishedAtPrecision?: "day" | "second";
+  reactions?: number;
+  replies?: number;
+  views?: number;
   ingestedAt: string;
   authorHash: string;
   private: boolean;

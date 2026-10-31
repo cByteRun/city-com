@@ -26,7 +26,9 @@ export function sources(demo: boolean): Source[] {
     .concat([
       {
         id: "direct",
-        name: "Direct · синтетический поток",
+        name: demo
+          ? "Direct · синтетический поток"
+          : "Direct · официальный Telegram-бот",
         type: "Direct",
         url: "",
         enabled: true,

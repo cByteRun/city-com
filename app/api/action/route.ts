@@ -8,7 +8,16 @@ import {
 import { readState, mutate, audit } from "@/server/store";
 import { scope, analysisSchema, maskPII } from "@/server/domain";
 import { seed } from "@/server/seed";
-import { ingest, incomingSchema, syncSource } from "@/server/connectors";
+import {
+  ingest,
+  incomingSchema,
+  syncSource,
+  syncDemo,
+  validateEndpoint,
+  collectSourceRows,
+} from "@/server/connectors";
+import { publicApiTypes, validateSocialSource } from "@/server/social-sources";
+import { matchesKeywords } from "@/server/source-contract";
 import { evaluate } from "@/server/quality";
 import { departments } from "@/server/types";
 export const runtime = "nodejs";
@@ -32,6 +41,8 @@ export async function POST(request: Request) {
         "private",
         "delete",
         "source",
+        "probe",
+        "source-create",
         "evaluate",
         "department",
       ])
@@ -53,10 +64,12 @@ export async function POST(request: Request) {
           private: z.boolean().default(false),
         })
         .parse(body);
-      if (
-        !readState(user.workspace).sources.some((s) => s.id === input.sourceId)
-      )
-        throw new Error("Источник не найден");
+      const ingestionSource = readState(user.workspace).sources.find(
+        (s) => s.id === input.sourceId,
+      );
+      if (ingestionSource?.type === "Direct" && !input.private)
+        throw new Error("Direct нельзя импортировать как публичный источник");
+      if (!ingestionSource) throw new Error("Источник не найден");
       if (input.private && user.workspace === "live")
         throw new Error(
           "Direct P0 доступен только в синтетическом DEMO. Подключение реального аккаунта требует отдельной интеграции.",
@@ -75,12 +88,33 @@ export async function POST(request: Request) {
         (s) => s.id === body.id,
       );
       if (!source) throw new Error("Источник не найден");
-      if (user.workspace === "demo")
-        result = {
-          message:
-            "Демонстрационные записи уже загружены. Для настоящего сбора перейдите в LIVE.",
-        };
+      if (user.workspace === "demo") result = await syncDemo(source, user.name);
       else result = await syncSource(source, user.name);
+    }
+    if (action === "probe") {
+      if (user.role !== "admin") throw new Error("FORBIDDEN");
+      const source = readState(user.workspace).sources.find(
+        (item) => item.id === body.id,
+      );
+      if (!source || source.type === "Direct")
+        throw new Error("Выберите публичный источник");
+      if (user.workspace !== "live")
+        throw new Error("Проверка сети доступна только в LIVE");
+      const { rows } = await collectSourceRows(source);
+      const matched = rows.filter((row) =>
+        matchesKeywords(row.text, source.keywords),
+      );
+      result = {
+        message: `Проверка: получено ${rows.length}, по ключевым словам ${matched.length}. Gemini и запись обращений не запускались.`,
+      };
+      mutate(user.workspace, (state) =>
+        audit(
+          state,
+          user.name,
+          `Проверка источника: ${rows.length}, совпадений ${matched.length}`,
+          source.id,
+        ),
+      );
     }
     if (action === "cluster") {
       const input = z
@@ -202,6 +236,33 @@ export async function POST(request: Request) {
         audit(s, user.name, "Удаление записи по запросу", String(body.id));
       });
     }
+    if (action === "source-create") {
+      if (user.role !== "admin") throw new Error("FORBIDDEN");
+      mutate(user.workspace, (state) => {
+        const next =
+          Math.max(
+            0,
+            ...state.sources.map((item) =>
+              Number(item.id.match(/^source-(\d+)$/)?.[1] || 0),
+            ),
+          ) + 1;
+        const id = `source-${next}`;
+        state.sources.push({
+          id,
+          name: `Источник ${next}`,
+          type: "HTML",
+          url: "",
+          enabled: false,
+          permission: false,
+          configured: true,
+          intervalMinutes: 60,
+          fetched: 0,
+          inserted: 0,
+          duplicates: 0,
+        });
+        audit(state, user.name, "Добавлен источник", id);
+      });
+    }
     if (action === "source") {
       if (user.role !== "admin") throw new Error("FORBIDDEN");
       const input = z
@@ -209,11 +270,49 @@ export async function POST(request: Request) {
           id: z.string(),
           enabled: z.boolean(),
           intervalMinutes: z.number().int().min(1).max(60),
+          name: z.string().min(3).max(120).optional(),
+          type: z.enum(["JSON", "RSS", "HTML", ...publicApiTypes]).optional(),
+          url: z.string().max(2000).optional(),
+          keywords: z.string().max(500).optional(),
+          permission: z.boolean().optional(),
+          permissionBasis: z.string().max(1000).optional(),
+          resourceId: z.string().max(200).optional(),
+          city: z.string().max(100).optional(),
+          region: z.string().max(100).optional(),
+          tags: z.string().max(500).optional(),
+          aiConsent: z.boolean().optional(),
         })
         .parse(body);
+      if (
+        input.type &&
+        (publicApiTypes as readonly string[]).includes(input.type)
+      )
+        validateSocialSource({
+          type: input.type,
+          url: input.url || "",
+          resourceId: input.resourceId,
+        });
+      if (input.url) {
+        const endpoint = await validateEndpoint(input.url);
+        if (endpoint.search || endpoint.hash)
+          throw new Error("URL не должен содержать токены, query или fragment");
+      }
+      if (input.permission && !input.permissionBasis?.trim())
+        throw new Error("Укажите основание разрешения и условия использования");
       mutate(user.workspace, (s) => {
         const source = s.sources.find((s) => s.id === input.id);
         if (!source) throw new Error("Источник не найден");
+        if (source.type === "Direct" && input.type)
+          throw new Error("Direct нельзя преобразовать в публичный источник");
+        if (input.name !== undefined) {
+          Object.assign(source, input, {
+            configured: true,
+            cursor: undefined,
+            lastSync: undefined,
+            nextSync: undefined,
+            error: undefined,
+          });
+        }
         Object.assign(source, {
           enabled: input.enabled,
           intervalMinutes: input.intervalMinutes,
