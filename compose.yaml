@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env.local
+    environment:
+      CITYCOM_DB_PATH: /app/data/citycom.sqlite
+    volumes:
+      - citycom-data:/app/data
+    restart: unless-stopped
+  collector:
+    build: .
+    command: ["npm", "run", "worker"]
+    env_file: .env.local
+    environment:
+      CITYCOM_DB_PATH: /app/data/citycom.sqlite
+    volumes:
+      - citycom-data:/app/data
+    restart: unless-stopped
+volumes:
+  citycom-data:

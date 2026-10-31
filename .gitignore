@@ -1,0 +1,14 @@
+tmp*
+node_modules/
+dist/
+*.log
+.next/
+data/
+.env*
+!.env.example
+*.tsbuildinfo
+test-results/
+playwright-report/
+.next-prod/
+.next-fsd/
+assets

@@ -1,0 +1,199 @@
+[
+  {
+    "id": "F01",
+    "slug": "manage-sources",
+    "domain": "D01",
+    "title": "Управление источниками и сбором",
+    "specification": "3.1.1, 3.1.2, 3.1.4, 3.6, 4, 8.1",
+    "document": "docs/features/manage-sources.md",
+    "publicApi": "src/features/manage-sources/index.ts",
+    "implementation": [
+      "src/features/manage-sources/ui/manage-sources.tsx",
+      "src/pages/sources/index.ts",
+      "src/entities/source/index.ts",
+      "src/server/connectors.ts",
+      "scripts/worker.ts",
+      "app/api/action/route.ts"
+    ]
+  },
+  {
+    "id": "F02",
+    "slug": "ingest-feedback",
+    "domain": "D02",
+    "title": "Импорт и первичная обработка обращений",
+    "specification": "3.1.3–3.1.6, 3.2.1–3.2.4, 3.3.1–3.3.4, 3.4.2, 3.7.3, 3.7.7, 8.1, 8.2, 8.4, 8.8, 8.9",
+    "document": "docs/features/ingest-feedback.md",
+    "publicApi": "src/features/ingest-feedback/index.ts",
+    "implementation": [
+      "src/features/ingest-feedback/ui/ingest-feedback.tsx",
+      "src/pages/processing/index.ts",
+      "src/entities/feedback/index.ts",
+      "src/server/connectors.ts",
+      "src/server/ai.ts",
+      "src/server/domain.ts",
+      "app/api/action/route.ts"
+    ]
+  },
+  {
+    "id": "F03",
+    "slug": "filter-feedback",
+    "domain": "D06",
+    "title": "Сквозные фильтры и сохранённая выборка",
+    "specification": "3.4.1, 3.5.2, 3.8.1, 3.8.4, 8.3, 8.5",
+    "document": "docs/features/filter-feedback.md",
+    "publicApi": "src/features/filter-feedback/index.ts",
+    "implementation": [
+      "src/features/filter-feedback/client.ts",
+      "src/features/filter-feedback/model/filter-items.ts",
+      "src/features/filter-feedback/model/types.ts",
+      "src/widgets/feedback-feed/index.ts",
+      "app/api/export/route.ts",
+      "src/server/domain.ts"
+    ]
+  },
+  {
+    "id": "F04",
+    "slug": "review-classification",
+    "domain": "D03",
+    "title": "Подтверждение и исправление классификации",
+    "specification": "3.2.2, 3.2.3, 3.2.5, 3.3.1, 3.3.5, 4, 5.4, 8.2, 8.6",
+    "document": "docs/features/review-classification.md",
+    "publicApi": "src/features/review-classification/index.ts",
+    "implementation": [
+      "src/features/review-classification/ui/review-classification.tsx",
+      "src/pages/moderation/index.ts",
+      "src/widgets/feedback-details/index.ts",
+      "app/api/action/route.ts",
+      "src/server/auth.ts",
+      "src/server/store.ts"
+    ]
+  },
+  {
+    "id": "F05",
+    "slug": "assign-issue",
+    "domain": "D05",
+    "title": "Назначение ответственного и контроль статуса",
+    "specification": "3.2.5, 3.4.3, 3.4.4, 3.5.3, 3.8.2, 3.8.3, 5.4, 8.4",
+    "document": "docs/features/assign-issue.md",
+    "publicApi": "src/features/assign-issue/index.ts",
+    "implementation": [
+      "src/features/assign-issue/ui/assign-issue.tsx",
+      "src/pages/issues/index.ts",
+      "src/entities/issue/index.ts",
+      "app/api/action/route.ts",
+      "src/server/auth.ts",
+      "src/server/store.ts"
+    ]
+  },
+  {
+    "id": "F06",
+    "slug": "export-report",
+    "domain": "D06",
+    "title": "Экспорт текущей выборки",
+    "specification": "3.5.6, 3.8.4–3.8.6, 8.5",
+    "document": "docs/features/export-report.md",
+    "publicApi": "src/features/export-report/index.ts",
+    "implementation": [
+      "src/features/export-report/ui/export-report.tsx",
+      "app/api/export/route.ts",
+      "src/server/pdf.ts",
+      "src/server/domain.ts"
+    ]
+  },
+  {
+    "id": "F07",
+    "slug": "workspace-access",
+    "domain": "D07",
+    "title": "Вход, роли и разделение DEMO/LIVE",
+    "specification": "3.6, 3.7.4, 3.8.6, 4, 5.1, 5.3, 8.7, 8.8",
+    "document": "docs/features/workspace-access.md",
+    "publicApi": "src/features/workspace-access/index.ts",
+    "implementation": [
+      "src/features/workspace-access/ui/workspace-access.tsx",
+      "src/features/workspace-access/api/session.ts",
+      "src/entities/session/index.ts",
+      "src/entities/workspace/index.ts",
+      "app/api/session/route.ts",
+      "src/server/auth.ts",
+      "src/server/domain.ts",
+      "src/server/store.ts"
+    ]
+  },
+  {
+    "id": "F08",
+    "slug": "read-private-feedback",
+    "domain": "D07",
+    "title": "Разрешённый просмотр Direct demo",
+    "specification": "3.7.3, 3.7.4, 3.7.6, 3.7.7, 3.8.6, 5.3, 8.8",
+    "document": "docs/features/read-private-feedback.md",
+    "publicApi": "src/features/read-private-feedback/index.ts",
+    "implementation": [
+      "src/features/read-private-feedback/ui/read-private-feedback.tsx",
+      "src/widgets/feedback-details/index.ts",
+      "app/api/action/route.ts",
+      "src/server/domain.ts",
+      "src/server/auth.ts"
+    ]
+  },
+  {
+    "id": "F09",
+    "slug": "delete-feedback",
+    "domain": "D07",
+    "title": "Удаление записи по запросу",
+    "specification": "5.6, 3.6, 8.7",
+    "document": "docs/features/delete-feedback.md",
+    "publicApi": "src/features/delete-feedback/index.ts",
+    "implementation": [
+      "src/features/delete-feedback/ui/delete-feedback.tsx",
+      "app/api/action/route.ts",
+      "src/server/store.ts"
+    ]
+  },
+  {
+    "id": "F10",
+    "slug": "manage-departments",
+    "domain": "D08",
+    "title": "Настройка тематик и ответственных",
+    "specification": "3.2.1, 3.2.5, 3.6, 7, 8.2",
+    "document": "docs/features/manage-departments.md",
+    "publicApi": "src/features/manage-departments/index.ts",
+    "implementation": [
+      "src/features/manage-departments/ui/manage-departments.tsx",
+      "src/pages/administration/index.ts",
+      "src/entities/department/index.ts",
+      "app/api/action/route.ts",
+      "src/server/ai.ts",
+      "src/server/store.ts"
+    ]
+  },
+  {
+    "id": "F11",
+    "slug": "evaluate-quality",
+    "domain": "D09",
+    "title": "Измерение качества RU/KZ",
+    "specification": "3.3.5, 3.2.2, 3.2.3, 4, 8.6",
+    "document": "docs/features/evaluate-quality.md",
+    "publicApi": "src/features/evaluate-quality/index.ts",
+    "implementation": [
+      "src/features/evaluate-quality/ui/evaluate-quality.tsx",
+      "src/pages/quality/index.ts",
+      "src/entities/quality/index.ts",
+      "src/server/quality.ts",
+      "src/server/ai.ts",
+      "app/api/action/route.ts"
+    ]
+  },
+  {
+    "id": "F12",
+    "slug": "search-feedback",
+    "domain": "D10",
+    "title": "Поисковая сводка по обращениям",
+    "specification": "3.5.5, 6.1, 5.3, 5.4",
+    "document": "docs/features/search-feedback.md",
+    "publicApi": "src/features/search-feedback/index.ts",
+    "implementation": [
+      "src/features/search-feedback/ui/search-feedback.tsx",
+      "src/pages/assistant/index.ts"
+    ]
+  }
+]
