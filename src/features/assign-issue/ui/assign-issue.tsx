@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Cluster, type Status } from "@/entities/issue";
 import { type User } from "@/entities/session";
 import { type Action, type Notify } from "@/shared/api";
@@ -22,14 +24,15 @@ export function AssignIssue({
   notify: Notify;
   onSaved: (message: string) => void;
 }) {
+  useLocale();
   const [department, setDepartment] = useState(cluster.department);
   const [status, setStatus] = useState<Status>(cluster.status);
   const canEdit = user.role !== "viewer";
   return (
     <section className="assignment-form">
-      <h3>Решение сотрудника</h3>
+      <h3>{t("Решение сотрудника")}</h3>
       <label className="field-label">
-        Ответственное подразделение
+        {t("Ответственное подразделение")}
         <select
           value={department}
           onChange={(e) => setDepartment(e.target.value)}
@@ -38,19 +41,23 @@ export function AssignIssue({
           {departments
             .filter((d) => user.role !== "department" || d === user.department)
             .map((d) => (
-              <option key={d}>{d}</option>
+              <option key={d} value={d}>
+                {t(d)}
+              </option>
             ))}
         </select>
       </label>
       <label className="field-label">
-        Статус
+        {t("Статус")}
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value as Status)}
           disabled={!canEdit}
         >
           {["Новое", "Передано", "В работе", "Решено", "Закрыто"].map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>
+              {t(s)}
+            </option>
           ))}
         </select>
       </label>
@@ -70,11 +77,13 @@ export function AssignIssue({
           }
         }}
       >
-        <Send size={14} /> Подтвердить решение
+        <Send size={14} /> {t("Подтвердить решение")}
       </Button>
-      <small>Новое → Передано → В работе → Решено → Закрыто</small>
+      <small>{t("Новое → Передано → В работе → Решено → Закрыто")}</small>
       {cluster.assignedAt && (
-        <small>Передано: {date(cluster.assignedAt)}</small>
+        <small>
+          {t("Передано:")} {t(date(cluster.assignedAt))}
+        </small>
       )}
     </section>
   );

@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Department } from "@/entities/department";
 import { type User } from "@/entities/session";
 import { type Action, type Notify } from "@/shared/api";
@@ -18,6 +20,7 @@ export function ManageDepartments({
   action: Action;
   notify: Notify;
 }) {
+  useLocale();
   const [editing, setEditing] = useState<string | null>(null);
   const [topics, setTopics] = useState("");
   const [responsible, setResponsible] = useState("");
@@ -35,16 +38,16 @@ export function ManageDepartments({
             }}
           >
             <Building2 size={14} />
-            {d.name}
+            {t(d.name)}
             {user.role === "admin" && <Settings2 size={11} />}
           </button>
         ))}
       </div>
       {editing && (
         <div className="directory-edit">
-          <h3>{directory.find((d) => d.id === editing)?.name}</h3>
+          <h3>{t(directory.find((d) => d.id === editing)?.name)}</h3>
           <label className="field-label">
-            Тематики и правила маршрутизации
+            {t("Тематики и правила маршрутизации")}
             <textarea
               rows={3}
               value={topics}
@@ -52,11 +55,11 @@ export function ManageDepartments({
             />
           </label>
           <label className="field-label">
-            Ответственная должность / отдел
+            {t("Ответственная должность / отдел")}
             <input
               value={responsible}
               onChange={(e) => setResponsible(e.target.value)}
-              placeholder="Например: дежурный специалист"
+              placeholder={t("Например: дежурный специалист")}
             />
           </label>
           <Button
@@ -75,12 +78,13 @@ export function ManageDepartments({
               }
             }}
           >
-            Сохранить изменения
+            {t("Сохранить изменения")}
           </Button>
-          <Button onClick={() => setEditing(null)}>Отмена</Button>
+          <Button onClick={() => setEditing(null)}>{t("Отмена")}</Button>
           <p className="body-copy">
-            Тематические подсказки используются при следующем LIVE-анализе.
-            Названия базовых сфер сохраняют сопоставимость с ТЗ.
+            {t(
+              "Тематические подсказки используются при следующем LIVE-анализе. Названия базовых сфер сохраняют сопоставимость с ТЗ.",
+            )}
           </p>
         </div>
       )}

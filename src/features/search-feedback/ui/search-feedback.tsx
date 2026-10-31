@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { Panel, Button } from "@/shared/ui";
 import { Sparkles, ArrowUpRight, ExternalLink, Send } from "lucide-react";
 import { type Item } from "@/entities/feedback";
@@ -17,19 +19,37 @@ export function ChatView({
   onSelect: (id: string) => void;
   workspace: Workspace;
 }) {
+  useLocale();
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<
-    { question: string; answer: string; refs: Item[] }[]
+    {
+      question: string;
+      count: number;
+      dep: string;
+      themes: string;
+      negative: number;
+      refs: Item[];
+    }[]
   >([]);
   function ask(q: string) {
     if (!q.trim()) return;
     const dep =
-      departments.find((d) => q.toLowerCase().includes(d.toLowerCase())) ||
-      (/школ/iu.test(q) ? "Образование" : "");
-    const negative = /негатив|жалоб/iu.test(q);
-    const lastWeek = /недел/iu.test(q);
-    const district = districts.find((d) =>
-      q.toLowerCase().includes(d.toLowerCase()),
+      departments.find(
+        (d) =>
+          q.toLowerCase().includes(d.toLowerCase()) ||
+          q.toLowerCase().includes(t(d).toLowerCase()),
+      ) ||
+      (/школ|school|мектеп/iu.test(q)
+        ? "Образование"
+        : /жкх|ткш|utilities/iu.test(q)
+          ? "ЖКХ"
+          : "");
+    const negative = /негатив|жалоб|negative|complaint|теріс|шағым/iu.test(q);
+    const lastWeek = /недел|week|апта/iu.test(q);
+    const district = districts.find(
+      (d) =>
+        q.toLowerCase().includes(d.toLowerCase()) ||
+        q.toLowerCase().includes(t(d).toLowerCase()),
     );
     const matching = items.filter(
       (i) =>
@@ -45,9 +65,10 @@ export function ChatView({
       ...m,
       {
         question: q,
-        answer: matching.length
-          ? `В текущей выборке найдено ${matching.length} публичных обращений${dep ? ` по сфере «${dep}»` : ""}. Основные темы: ${themes.map((c) => c.title.toLowerCase()).join("; ")}. ${matching.filter((i) => i.sentiment === "negative").length} сообщений с негативной тональностью. Для решения откройте первоисточники и подтвердите назначение.`
-          : "В текущей выборке нет подходящих публичных обращений. Измените фильтры или уточните сферу.",
+        count: matching.length,
+        dep,
+        themes: themes.map((c) => c.title).join("; "),
+        negative: matching.filter((i) => i.sentiment === "negative").length,
         refs: matching.slice(0, 3),
       },
     ]);
@@ -55,19 +76,22 @@ export function ChatView({
   }
   return (
     <Panel
-      title="Ассистент по обращениям"
-      sub={`${workspace.toUpperCase()} · локальный поиск и сводка по данным, без генеративного ответа`}
+      title={t("Ассистент по обращениям")}
+      sub={t(
+        "{0} · локальный поиск и сводка по данным, без генеративного ответа",
+        [workspace.toUpperCase()],
+      )}
       className="chat-panel"
     >
       <div className="chat-intro">
         <span>
           <Sparkles size={28} />
         </span>
-        <h2>Что происходит в городе?</h2>
+        <h2>{t("Что происходит в городе?")}</h2>
         <p>
-          Задайте вопрос по сфере, району или негативным обращениям.
+          {t("Задайте вопрос по сфере, району или негативным обращениям.")}
           <br />
-          Ответ строится из текущей выборки публичных сообщений.
+          {t("Ответ строится из текущей выборки публичных сообщений.")}
         </p>
         <div>
           {[
@@ -75,8 +99,8 @@ export function ChatView({
             "Покажи негатив по школам",
             "Какие проблемы в Северном районе?",
           ].map((q) => (
-            <button key={q} onClick={() => ask(q)}>
-              {q}
+            <button key={q} onClick={() => ask(t(q))}>
+              {t(q)}
               <ArrowUpRight size={13} />
             </button>
           ))}
@@ -89,11 +113,25 @@ export function ChatView({
             <div className="chat-answer">
               <Sparkles size={17} />
               <div>
-                <p>{m.answer}</p>
+                <p>
+                  {m.count
+                    ? t(
+                        "В текущей выборке найдено {0} публичных обращений{1}. Основные темы: {2}. {3} сообщений с негативной тональностью. Для решения откройте первоисточники и подтвердите назначение.",
+                        [
+                          m.count,
+                          m.dep ? t(" по сфере «{0}»", [t(m.dep)]) : "",
+                          m.themes,
+                          m.negative,
+                        ],
+                      )
+                    : t(
+                        "В текущей выборке нет подходящих публичных обращений. Измените фильтры или уточните сферу.",
+                      )}
+                </p>
                 {m.refs.map((i, n) => (
                   <button key={i.id} onClick={() => onSelect(i.id)}>
-                    <span>[{n + 1}]</span>
-                    {i.topic}
+                    <span>[{t(n + 1)}]</span>
+                    {t(i.topic)}
                     <ExternalLink size={12} />
                   </button>
                 ))}
@@ -112,21 +150,22 @@ export function ChatView({
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Вопрос по обращениям"
-          placeholder="Например: какие главные жалобы по ЖКХ за неделю?"
+          aria-label={t("Вопрос по обращениям")}
+          placeholder={t("Например: какие главные жалобы по ЖКХ за неделю?")}
         />
         <Button
           type="submit"
           variant="default"
           disabled={!query.trim()}
-          aria-label="Отправить вопрос"
+          aria-label={t("Отправить вопрос")}
         >
           <Send size={17} />
         </Button>
       </form>
       <p className="chat-note">
-        Сводка носит рекомендательный характер. Direct и персональные данные
-        исключены.
+        {t(
+          "Сводка носит рекомендательный характер. Direct и персональные данные исключены.",
+        )}
       </p>
     </Panel>
   );

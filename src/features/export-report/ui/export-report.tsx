@@ -1,10 +1,15 @@
 "use client";
+import { useLocale, getLocale } from "@/shared/i18n";
+
 import { Button } from "@/shared/ui";
 import { ArrowDownToLine } from "lucide-react";
 export function ExportControls({ query }: { query: Record<string, string> }) {
+  useLocale();
   function exportData(format: string) {
     const link = document.createElement("a");
-    link.href = "/api/export?" + new URLSearchParams({ ...query, format });
+    link.href =
+      "/api/export?" +
+      new URLSearchParams({ ...query, format, locale: getLocale() });
     link.download = `citycom.${format}`;
     link.click();
   }

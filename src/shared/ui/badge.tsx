@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type ReactNode } from "react";
 export function Badge({
   children,
@@ -7,10 +9,11 @@ export function Badge({
   children: ReactNode;
   kind?: string;
 }) {
+  useLocale();
   return (
     <span className={`badge badge-${kind}`}>
       <span />
-      {children}
+      {t(children)}
     </span>
   );
 }

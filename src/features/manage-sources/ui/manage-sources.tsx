@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Source } from "@/entities/source";
 import { type User } from "@/entities/session";
 import { type Action, type Notify } from "@/shared/api";
@@ -18,6 +20,7 @@ export function ManageSources({
   action: Action;
   notify: Notify;
 }) {
+  useLocale();
   return (
     <div className="source-list">
       {sources.map((s) => (
@@ -32,22 +35,26 @@ export function ManageSources({
             )}
           </span>
           <div className="source-main">
-            <strong>{s.name}</strong>
+            <strong>{t(s.name)}</strong>
             <small>
-              {s.type} ·{" "}
-              {s.type === "Direct"
-                ? "Только синтетический демонстрационный поток"
-                : `Сбор каждые ${s.intervalMinutes} мин`}
+              {t(s.type)} ·{" "}
+              {t(
+                s.type === "Direct"
+                  ? "Только синтетический демонстрационный поток"
+                  : t("Сбор каждые {0} мин", [s.intervalMinutes]),
+              )}
             </small>
-            {s.error && <p className="error-inline">{s.error}</p>}
+            {s.error && <p className="error-inline">{t(s.error)}</p>}
           </div>
           <div className="source-stats">
-            <strong>{s.inserted}</strong>
-            <small>сохранено</small>
+            <strong>{t(s.inserted)}</strong>
+            <small>{t("сохранено")}</small>
           </div>
           <div className="source-sync">
-            <small>Последний сбор</small>
-            <span>{s.lastSync ? date(s.lastSync) : "Ещё не выполнялся"}</span>
+            <small>{t("Последний сбор")}</small>
+            <span>
+              {t(s.lastSync ? date(s.lastSync) : "Ещё не выполнялся")}
+            </span>
           </div>
           <Badge
             kind={
@@ -60,13 +67,15 @@ export function ManageSources({
                     : "neutral"
             }
           >
-            {user?.workspace === "demo"
-              ? "DEMO"
-              : s.error
-                ? "Ошибка"
-                : s.lastSync
-                  ? "Подключён"
-                  : "Не подключён"}
+            {t(
+              user?.workspace === "demo"
+                ? "DEMO"
+                : s.error
+                  ? "Ошибка"
+                  : s.lastSync
+                    ? "Подключён"
+                    : "Не подключён",
+            )}
           </Badge>
           <Button
             size="sm"
@@ -79,11 +88,14 @@ export function ManageSources({
               if (r)
                 notify(
                   r.message ||
-                    `Сохранено: ${r.inserted}, пропущено: ${r.duplicates}`,
+                    t("Сохранено: {0}, пропущено: {1}", [
+                      r.inserted,
+                      r.duplicates,
+                    ]),
                 );
             }}
           >
-            <RefreshCw size={13} /> Собрать
+            <RefreshCw size={13} /> {t("Собрать")}
           </Button>
           <button
             className="text-action"
@@ -101,7 +113,7 @@ export function ManageSources({
                 );
             }}
           >
-            {s.enabled ? "Пауза" : "Включить"}
+            {t(s.enabled ? "Пауза" : "Включить")}
           </button>
         </div>
       ))}

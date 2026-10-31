@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Item } from "@/entities/feedback";
 import { type Action, type Notify } from "@/shared/api";
 import { useState } from "react";
@@ -16,12 +18,13 @@ export function DeleteFeedback({
   notify: Notify;
   onClose: () => void;
 }) {
+  useLocale();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   return (
     <div className="delete-record">
       {deleteConfirm ? (
         <>
-          <p>Удалить обращение и его текст из системы?</p>
+          <p>{t("Удалить обращение и его текст из системы?")}</p>
           <Button
             variant="destructive"
             disabled={busy}
@@ -33,13 +36,13 @@ export function DeleteFeedback({
               }
             }}
           >
-            Подтвердить удаление
+            {t("Подтвердить удаление")}
           </Button>
-          <Button onClick={() => setDeleteConfirm(false)}>Отмена</Button>
+          <Button onClick={() => setDeleteConfirm(false)}>{t("Отмена")}</Button>
         </>
       ) : (
         <button className="danger-link" onClick={() => setDeleteConfirm(true)}>
-          Удалить запись по запросу
+          {t("Удалить запись по запросу")}
         </button>
       )}
     </div>

@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import {
   FileText,
   TriangleAlert,
@@ -45,56 +47,71 @@ export function OverviewPage({
   resolved: number;
   trend: { date: string; total: number; negative: number }[];
 }) {
+  useLocale();
   return (
     <>
       <div className="kpi-grid">
-        {kpi(
-          "Всего обращений",
-          items.length,
-          previousCount
-            ? `${Math.round(((items.length - previousCount) / previousCount) * 100)}% к прошлому периоду`
-            : previousCount === 0
-              ? "Нет базы сравнения"
-              : "За всё время",
-          <FileText size={18} />,
-          () => go("feed"),
+        {t(
+          kpi(
+            "Всего обращений",
+            items.length,
+            previousCount
+              ? t("{0}% к прошлому периоду", [
+                  Math.round(
+                    ((items.length - previousCount) / previousCount) * 100,
+                  ),
+                ])
+              : previousCount === 0
+                ? "Нет базы сравнения"
+                : "За всё время",
+            <FileText size={18} />,
+            () => go("feed"),
+          ),
         )}
-        {kpi(
-          "Негативных",
-          `${pct(negative, items.length)}%`,
-          `${negative} требуют внимания`,
-          <TriangleAlert size={18} />,
-          () => go("feed", { sentiment: "negative" }),
-          "coral",
+        {t(
+          kpi(
+            "Негативных",
+            `${pct(negative, items.length)}%`,
+            t("{0} требуют внимания", [negative]),
+            <TriangleAlert size={18} />,
+            () => go("feed", { sentiment: "negative" }),
+            "coral",
+          ),
         )}
-        {kpi(
-          "Высокий приоритет",
-          high,
-          `${pct(high, items.length)}% от обращений`,
-          <TriangleAlert size={18} />,
-          () => go("issues", { priority: "high" }),
-          "amber",
+        {t(
+          kpi(
+            "Высокий приоритет",
+            high,
+            t("{0}% от обращений", [pct(high, items.length)]),
+            <TriangleAlert size={18} />,
+            () => go("issues", { priority: "high" }),
+            "amber",
+          ),
         )}
-        {kpi(
-          "Индекс настроения",
-          pct(positive, items.length) - pct(negative, items.length),
-          "% позитив − % негатив",
-          <Activity size={18} />,
+        {t(
+          kpi(
+            "Индекс настроения",
+            pct(positive, items.length) - pct(negative, items.length),
+            "% позитив − % негатив",
+            <Activity size={18} />,
+          ),
         )}
-        {kpi(
-          "Решено",
-          `${pct(resolved, items.length)}%`,
-          `${resolved} обращений`,
-          <Check size={20} />,
-          () => go("feed", { status: "Решено" }),
-          "green",
+        {t(
+          kpi(
+            "Решено",
+            `${pct(resolved, items.length)}%`,
+            t("{0} обращений", [resolved]),
+            <Check size={20} />,
+            () => go("feed", { status: "Решено" }),
+            "green",
+          ),
         )}
       </div>
       <div className="dashboard-grid">
         <Panel
-          title="Динамика городской обратной связи"
-          sub="Распределение публикаций за 14 дней"
-          action={<span className="subtle-tag">14 дней</span>}
+          title={t("Динамика городской обратной связи")}
+          sub={t("Распределение публикаций за 14 дней")}
+          action={<span className="subtle-tag">{t("14 дней")}</span>}
         >
           {items.length ? (
             <TrendChart data={trend} onClick={() => go("feed")} />
@@ -104,18 +121,18 @@ export function OverviewPage({
           <div className="chart-footer">
             <span>
               <i className="dot blue-dot" />
-              Все обращения
+              {t("Все обращения")}
             </span>
             <span>
               <i className="dot coral-dot" />
-              Негатив
+              {t("Негатив")}
             </span>
             <button onClick={() => go("feed")}>
-              Смотреть ленту <ArrowRight size={12} />
+              {t("Смотреть ленту")} <ArrowRight size={12} />
             </button>
           </div>
         </Panel>
-        <Panel title="Тональность" sub="Доли обращений">
+        <Panel title={t("Тональность")} sub={t("Доли обращений")}>
           {items.length ? (
             <>
               <SentimentChart
@@ -150,8 +167,8 @@ export function OverviewPage({
                     onClick={() => go("feed", { sentiment: String(key) })}
                   >
                     <i className={`dot ${key}-dot`} />
-                    <span>{sentimentLabels[key]}</span>
-                    <strong>{pct(Number(count), items.length)}%</strong>
+                    <span>{t(sentimentLabels[key])}</span>
+                    <strong>{t(pct(Number(count), items.length))}%</strong>
                   </button>
                 ))}
               </div>
@@ -161,11 +178,11 @@ export function OverviewPage({
           )}
         </Panel>
         <Panel
-          title="Приоритетные городские проблемы"
-          sub="Топ кластеров обращений"
+          title={t("Приоритетные городские проблемы")}
+          sub={t("Топ кластеров обращений")}
           action={
             <button className="text-action" onClick={() => go("issues")}>
-              Все проблемы <ArrowRight size={12} />
+              {t("Все проблемы")} <ArrowRight size={12} />
             </button>
           }
         >
@@ -177,7 +194,10 @@ export function OverviewPage({
             onSelect={setSelected}
           />
         </Panel>
-        <Panel title="Источники обращений" sub="Распределение по каналам">
+        <Panel
+          title={t("Источники обращений")}
+          sub={t("Распределение по каналам")}
+        >
           <div className="source-bars">
             {state.sources.map((source, index) => {
               const count = items.filter(
@@ -189,8 +209,8 @@ export function OverviewPage({
                   onClick={() => go("feed", { source: source.id })}
                 >
                   <div>
-                    <span>{source.name}</span>
-                    <strong>{count}</strong>
+                    <span>{t(source.name)}</span>
+                    <strong>{t(count)}</strong>
                   </div>
                   <div className="bar-track">
                     <div
@@ -210,14 +230,14 @@ export function OverviewPage({
             })}
           </div>
           <div className="source-bottom">
-            <span>Индекс настроения:</span>
+            <span>{t("Индекс настроения:")}</span>
             <strong>
-              {pct(positive, items.length) - pct(negative, items.length)}
+              {t(pct(positive, items.length) - pct(negative, items.length))}
             </strong>
           </div>
           <div className="early-warning">
             <Zap size={14} />
-            <span>Раннее выявление до официальной регистрации</span>
+            <span>{t("Раннее выявление до официальной регистрации")}</span>
           </div>
         </Panel>
       </div>

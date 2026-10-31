@@ -2981,3 +2981,14 @@ h2 {
 h3 {
   font-weight: 650;
 }
+
+.language-switch select {
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid var(--border, #dbe1ec);
+  border-radius: 7px;
+  background: var(--surface, transparent);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}

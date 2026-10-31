@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { EvaluateQuality } from "@/features/evaluate-quality";
 import { Activity, TriangleAlert, Check } from "lucide-react";
 import { Badge, Panel, Empty } from "@/shared/ui";
@@ -18,6 +20,7 @@ export function QualityView({
   action: Action;
   loadMs: number | null;
 }) {
+  useLocale();
   const q = state.quality;
   return (
     <>
@@ -25,10 +28,11 @@ export function QualityView({
         <div>
           <Activity size={22} />
           <div>
-            <h3>Качество должно быть измерено</h3>
+            <h3>{t("Качество должно быть измерено")}</h3>
             <p>
-              Размеченная RU/KZ smoke-выборка · 36 примеров. Не заменяет
-              независимую приёмочную выборку.
+              {t(
+                "Размеченная RU/KZ smoke-выборка · 36 примеров. Не заменяет независимую приёмочную выборку.",
+              )}
             </p>
           </div>
         </div>
@@ -50,73 +54,83 @@ export function QualityView({
           ],
           [
             "Обработка · P95",
-            q ? `${q.p95Ms} мс` : "Не измерено",
+            q ? t("{0} мс", [q.p95Ms]) : "Не измерено",
             "Цель ТЗ ≤ 5 секунд",
             q ? q.p95Ms <= 5000 : null,
           ],
           [
             "Загрузка данных",
-            loadMs !== null ? `${loadMs} мс` : "—",
+            loadMs !== null ? t("{0} мс", [loadMs]) : "—",
             "Локальный замер API; цель страницы ≤ 3 с",
             loadMs !== null ? loadMs < 3000 : null,
           ],
         ].map(([label, value, target, pass]) => (
           <div className="quality-card" key={String(label)}>
-            <small>{label}</small>
-            <strong>{value}</strong>
-            <p>{target}</p>
+            <small>{t(label)}</small>
+            <strong>{t(value)}</strong>
+            <p>{t(target)}</p>
             <Badge
               kind={pass === null ? "neutral" : pass ? "positive" : "negative"}
             >
-              {pass === null
-                ? "Ожидает проверки"
-                : pass
-                  ? "В пределах цели"
-                  : "Ниже цели"}
+              {t(
+                pass === null
+                  ? "Ожидает проверки"
+                  : pass
+                    ? "В пределах цели"
+                    : "Ниже цели",
+              )}
             </Badge>
           </div>
         ))}
       </div>
       <Panel
-        title="Протокол оценки"
-        sub={
+        title={t("Протокол оценки")}
+        sub={t(
           q
-            ? `${date(q.at)} · ${q.engine} · ${q.samples} примеров (${q.ru} RU / ${q.kk} KZ)`
-            : "Проверка ещё не запускалась"
-        }
+            ? t("{0} · {1} · {2} примеров ({3} RU / {4} KZ)", [
+                date(q.at),
+                q.engine,
+                q.samples,
+                q.ru,
+                q.kk,
+              ])
+            : "Проверка ещё не запускалась",
+        )}
       >
         {q ? (
           <>
             <div className="info-note">
               <TriangleAlert size={16} />
               <span>
-                {q.engine.startsWith("demo")
-                  ? "Измерен локальный демонстрационный классификатор. Качество LIVE-модели не подтверждено."
-                  : "Измерен настроенный LIVE-провайдер. Для приёмки нужна репрезентативная независимая выборка."}
+                {t(
+                  q.engine.startsWith("demo")
+                    ? "Измерен локальный демонстрационный классификатор. Качество LIVE-модели не подтверждено."
+                    : "Измерен настроенный LIVE-провайдер. Для приёмки нужна репрезентативная независимая выборка.",
+                )}
               </span>
             </div>
             <div className="table-scroll">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Ошибки smoke-проверки</th>
-                    <th>Эталон</th>
-                    <th>Результат</th>
+                    <th>{t("Ошибки smoke-проверки")}</th>
+                    <th>{t("Эталон")}</th>
+                    <th>{t("Результат")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {q.errors.map((e, i) => (
                     <tr key={i}>
-                      <td>{e.text}</td>
-                      <td>{e.expected}</td>
-                      <td>{e.actual}</td>
+                      <td>{t(e.text)}</td>
+                      <td>{t(e.expected)}</td>
+                      <td>{t(e.actual)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {!q.errors.length && (
                 <Empty
-                  title="На этой выборке ошибок нет"
+                  title={t("На этой выборке ошибок нет")}
                   text="Это результат smoke-проверки; обобщать его на все обращения пока нельзя."
                 />
               )}
@@ -124,14 +138,14 @@ export function QualityView({
           </>
         ) : (
           <Empty
-            title="Нет результатов измерения"
+            title={t("Нет результатов измерения")}
             text="Запустите проверку. Показатели не заполняются вымышленными процентами."
           />
         )}
       </Panel>
       <Panel
-        title="Что проверяет P0"
-        sub="Качество, безопасность и операционная пригодность"
+        title={t("Что проверяет P0")}
+        sub={t("Качество, безопасность и операционная пригодность")}
       >
         <div className="checklist">
           {[
@@ -144,7 +158,7 @@ export function QualityView({
           ].map((s) => (
             <div key={s}>
               <Check size={15} />
-              {s}
+              {t(s)}
             </div>
           ))}
         </div>

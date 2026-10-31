@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type ReactNode } from "react";
 export function Panel({
   title,
@@ -13,16 +15,17 @@ export function Panel({
   children: ReactNode;
   className?: string;
 }) {
+  useLocale();
   return (
     <section className={`panel ${className}`}>
       <div className="panel-heading">
         <div>
-          <h2>{title}</h2>
-          {sub && <p>{sub}</p>}
+          <h2>{t(title)}</h2>
+          {sub && <p>{t(sub)}</p>}
         </div>
-        {action}
+        {t(action)}
       </div>
-      {children}
+      {t(children)}
     </section>
   );
 }

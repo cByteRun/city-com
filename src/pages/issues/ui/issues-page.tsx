@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { TriangleAlert, Zap, Layers3, Send, ShieldCheck } from "lucide-react";
 import { Panel } from "@/shared/ui";
 import { IssueTable } from "@/widgets/issue-table";
@@ -22,47 +24,59 @@ export function IssuesPage({
     selection: { kind: "item" | "cluster"; id: string } | null,
   ) => void;
 }) {
+  useLocale();
   return (
     <>
       <div className="kpi-grid four">
-        {kpi(
-          "Высокий приоритет",
-          clusters.filter((c) => priority(c, state.items).label === "high")
-            .length,
-          "Требуют внимания оператора",
-          <TriangleAlert size={18} />,
-          () => updateFilter("priority", "high"),
-          "coral",
+        {t(
+          kpi(
+            "Высокий приоритет",
+            clusters.filter((c) => priority(c, state.items).label === "high")
+              .length,
+            "Требуют внимания оператора",
+            <TriangleAlert size={18} />,
+            () => updateFilter("priority", "high"),
+            "coral",
+          ),
         )}
-        {kpi(
-          "Горячие темы за 24 часа",
-          clusters.filter((c) => priority(c, state.items).recent >= 3).length,
-          "Не менее трёх новых сигналов",
-          <Zap size={18} />,
+        {t(
+          kpi(
+            "Горячие темы за 24 часа",
+            clusters.filter((c) => priority(c, state.items).recent >= 3).length,
+            "Не менее трёх новых сигналов",
+            <Zap size={18} />,
+          ),
         )}
-        {kpi(
-          "Всего проблем",
-          clusters.length,
-          "Объединены по теме и месту",
-          <Layers3 size={18} />,
+        {t(
+          kpi(
+            "Всего проблем",
+            clusters.length,
+            "Объединены по теме и месту",
+            <Layers3 size={18} />,
+          ),
         )}
-        {kpi(
-          "Ожидают назначения",
-          clusters.filter((c) => !c.assignee).length,
-          "Подтвердите подразделение",
-          <Send size={18} />,
+        {t(
+          kpi(
+            "Ожидают назначения",
+            clusters.filter((c) => !c.assignee).length,
+            "Подтвердите подразделение",
+            <Send size={18} />,
+          ),
         )}
       </div>
       <div className="info-note">
         <ShieldCheck size={16} />
         <span>
-          Приоритет — рекомендация системы. Откройте проблему, проверьте
-          основания и подтвердите решение.
+          {t(
+            "Приоритет — рекомендация системы. Откройте проблему, проверьте основания и подтвердите решение.",
+          )}
         </span>
       </div>
       <Panel
-        title="Реестр городских проблем"
-        sub={`${clusters.length} проблем · сортировка по расчётному приоритету`}
+        title={t("Реестр городских проблем")}
+        sub={t("{0} проблем · сортировка по расчётному приоритету", [
+          clusters.length,
+        ])}
       >
         <IssueTable
           list={clusters}

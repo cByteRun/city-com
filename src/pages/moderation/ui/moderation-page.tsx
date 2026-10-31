@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { ShieldCheck, Check, Activity, Sparkles } from "lucide-react";
 import { Panel, Empty } from "@/shared/ui";
 import { Feed } from "@/widgets/feedback-feed";
@@ -19,35 +21,47 @@ export function ModerationPage({
     selection: { kind: "item" | "cluster"; id: string } | null,
   ) => void;
 }) {
+  useLocale();
   return (
     <>
       <div className="kpi-grid four">
-        {kpi(
-          "Требуют проверки",
-          review.length,
-          "Уверенность ниже 60%",
-          <ShieldCheck size={18} />,
+        {t(
+          kpi(
+            "Требуют проверки",
+            review.length,
+            "Уверенность ниже 60%",
+            <ShieldCheck size={18} />,
+          ),
         )}
-        {kpi(
-          "Проверено оператором",
-          items.filter((i) => i.reviewed).length,
-          "Решение подтверждено человеком",
-          <Check size={18} />,
+        {t(
+          kpi(
+            "Проверено оператором",
+            items.filter((i) => i.reviewed).length,
+            "Решение подтверждено человеком",
+            <Check size={18} />,
+          ),
         )}
-        {kpi(
-          "Доля ручной проверки",
-          `${pct(review.length, items.length)}%`,
-          "От текущей выборки",
-          <Activity size={18} />,
+        {t(
+          kpi(
+            "Доля ручной проверки",
+            `${pct(review.length, items.length)}%`,
+            "От текущей выборки",
+            <Activity size={18} />,
+          ),
         )}
-        {kpi(
-          "Порог уверенности",
-          "0,60",
-          "Самооценка модели требует валидации",
-          <Sparkles size={18} />,
+        {t(
+          kpi(
+            "Порог уверенности",
+            "0,60",
+            "Самооценка модели требует валидации",
+            <Sparkles size={18} />,
+          ),
         )}
       </div>
-      <Panel title="Очередь проверки" sub="Сначала неоднозначные обращения">
+      <Panel
+        title={t("Очередь проверки")}
+        sub={t("Сначала неоднозначные обращения")}
+      >
         {review.length ? (
           <Feed
             items={review.sort((a, b) => a.confidence - b.confidence)}
@@ -57,7 +71,7 @@ export function ModerationPage({
           />
         ) : (
           <Empty
-            title="Очередь проверена"
+            title={t("Очередь проверена")}
             text="В текущей выборке нет обращений с низкой уверенностью."
           />
         )}

@@ -1,3 +1,4 @@
+import { parseLocale, translate } from "@/shared/i18n/translate";
 import { buildPDF } from "@/server/pdf";
 import ExcelJS from "exceljs";
 import { requireUser, errorResponse } from "@/server/auth";
@@ -11,6 +12,8 @@ export async function GET(request: Request) {
   try {
     const user = await requireUser();
     const params = new URL(request.url).searchParams;
+    const locale = parseLocale(params.get("locale"));
+    const t = <T>(value: T) => translate(locale, value);
     const state = scope(readState(user.workspace), user);
     const filters = Object.fromEntries(params) as Partial<Filters>;
     const items = filterItems(state, filters);
@@ -23,14 +26,18 @@ export async function GET(request: Request) {
           i.publishedAt,
           state.sources.find((s) => s.id === i.sourceId)?.name || "",
           i.text,
-          i.department,
-          sentimentLabels[i.sentiment],
+          t(i.department),
+          t(sentimentLabels[i.sentiment]),
           i.confidence,
           i.sentimentConfidence,
-          i.district,
+          t(i.district),
           i.topic,
-          priority(c, state.items).label,
-          c.status,
+          t(
+            { high: "Высокий", medium: "Средний", low: "Низкий" }[
+              priority(c, state.items).label
+            ] ?? priority(c, state.items).label,
+          ),
+          t(c.status),
           i.url,
           i.reason,
         ];
@@ -50,7 +57,7 @@ export async function GET(request: Request) {
       "Статус",
       "Оригинал",
       "Обоснование",
-    ];
+    ].map(t);
     const format = params.get("format") || "csv";
     mutate(user.workspace, (s) =>
       audit(
@@ -62,7 +69,7 @@ export async function GET(request: Request) {
     );
     if (format === "xlsx") {
       const wb = new ExcelJS.Workbook();
-      const ws = wb.addWorksheet("Обращения");
+      const ws = wb.addWorksheet(t("Обращения"));
       ws.addRow(headers);
       rows.forEach((row) =>
         ws.addRow(row.map((c) => (typeof c === "string" ? safeCell(c) : c))),
@@ -72,15 +79,17 @@ export async function GET(request: Request) {
         c.width = i === 3 ? 70 : 24;
       });
       ws.autoFilter = { from: "A1", to: "N1" };
-      const summary = wb.addWorksheet("Сводка");
-      summary.addRows([
-        ["CityCom", user.workspace.toUpperCase()],
-        ["Сформировано", new Date().toISOString()],
-        ["Фильтры", JSON.stringify(filters)],
-        ["Всего обращений", items.length],
-        ["Direct (только количество)", items.filter((i) => i.private).length],
-        ["Рекомендательный характер", "Итоговое решение принимает сотрудник"],
-      ]);
+      const summary = wb.addWorksheet(t("Сводка"));
+      summary.addRows(
+        [
+          ["CityCom", user.workspace.toUpperCase()],
+          ["Сформировано", new Date().toISOString()],
+          ["Фильтры", JSON.stringify(filters)],
+          ["Всего обращений", items.length],
+          ["Direct (только количество)", items.filter((i) => i.private).length],
+          ["Рекомендательный характер", "Итоговое решение принимает сотрудник"],
+        ].map((row) => row.map(t)),
+      );
       const buffer = await wb.xlsx.writeBuffer();
       return new Response(new Uint8Array(buffer), {
         headers: {
@@ -93,6 +102,7 @@ export async function GET(request: Request) {
     }
     if (format === "pdf") {
       const buffer = await buildPDF(rows, {
+        locale,
         workspace: user.workspace,
         total: items.length,
         direct: items.filter((i) => i.private).length,

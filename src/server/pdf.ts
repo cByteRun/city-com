@@ -1,19 +1,24 @@
+import { translate, intlLocales, type Locale } from "@/shared/i18n/translate";
 import PDFDocument from "pdfkit";
 import { resolve } from "node:path";
 export async function buildPDF(
   rows: (string | number)[][],
   summary: {
+    locale?: Locale;
     workspace: string;
     total: number;
     direct: number;
     filters: string;
   },
 ) {
+  const locale = summary.locale ?? "ru";
+  const t = (value: string, params?: readonly unknown[]) =>
+    translate(locale, value, params);
   const doc = new PDFDocument({
     size: "A4",
     margin: 42,
     font: resolve("public/fonts/DejaVuSans.ttf"),
-    info: { Title: "CityCom — Городская обратная связь", Author: "CityCom" },
+    info: { Title: t("CityCom — Городская обратная связь"), Author: "CityCom" },
   });
   const chunks: Buffer[] = [];
   const result = new Promise<Buffer>((resolve, reject) => {
@@ -21,25 +26,36 @@ export async function buildPDF(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
   });
-  doc.fontSize(21).fillColor("#19263d").text("CityCom · Городская аналитика");
+  doc
+    .fontSize(21)
+    .fillColor("#19263d")
+    .text(t("CityCom · Городская аналитика"));
   doc.moveDown(0.6);
   doc
     .fontSize(10)
     .fillColor("#7989a4")
     .text(
-      `${summary.workspace.toUpperCase()} · ${new Date().toLocaleString("ru-RU")}`,
+      `${summary.workspace.toUpperCase()} · ${new Date().toLocaleString(intlLocales[locale])}`,
     );
   doc.moveDown();
   doc
     .fillColor("#243754")
     .text(
-      `Обращений: ${summary.total} · Direct: ${summary.direct} (только агрегаты)`,
+      t("Обращений: {0} · Direct: {1} (только агрегаты)", [
+        summary.total,
+        summary.direct,
+      ]),
     );
   doc.moveDown(0.5);
-  doc.fontSize(8).fillColor("#7989a4").text(`Фильтры: ${summary.filters}`);
+  doc
+    .fontSize(8)
+    .fillColor("#7989a4")
+    .text(t("Фильтры: {0}", [summary.filters]));
   doc.moveDown();
   doc.text(
-    "ИИ предлагает решение; итоговое решение принимает сотрудник. Данные DEMO синтетические.",
+    t(
+      "ИИ предлагает решение; итоговое решение принимает сотрудник. Данные DEMO синтетические.",
+    ),
   );
   doc.moveDown(1.5);
   for (const row of rows) {

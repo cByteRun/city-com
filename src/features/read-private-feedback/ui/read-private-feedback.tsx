@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Item } from "@/entities/feedback";
 import { type User } from "@/entities/session";
 import { type Action } from "@/shared/api";
@@ -16,13 +18,16 @@ export function PrivateFeedbackText({
   busy: boolean;
   action: Action;
 }) {
+  useLocale();
   const [privateText, setPrivateText] = useState("");
   return (
     <>
       <LockKeyhole size={17} />
       <p>
         {privateText ||
-          "Приватное обращение. В общих дашбордах доступна только агрегированная информация."}
+          t(
+            "Приватное обращение. В общих дашбордах доступна только агрегированная информация.",
+          )}
       </p>
       {["admin", "analyst"].includes(user.role) && !privateText && (
         <Button
@@ -36,7 +41,7 @@ export function PrivateFeedbackText({
             if (r) setPrivateText(r.text || "");
           }}
         >
-          Открыть обезличенный текст
+          {t("Открыть обезличенный текст")}
         </Button>
       )}
     </>

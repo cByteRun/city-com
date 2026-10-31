@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale, formatAudit } from "@/shared/i18n";
+
 import { ManageDepartments } from "@/features/manage-departments";
 import { Panel, Badge, Button, Empty } from "@/shared/ui";
 import { ShieldCheck } from "lucide-react";
@@ -22,29 +24,38 @@ export function SettingsView({
   action: Action;
   notify: (text: string, error?: boolean) => void;
 }) {
+  useLocale();
   return (
     <>
       <div className="two-columns">
-        <Panel title="Текущий доступ" sub="Права проверяются в серверных API">
+        <Panel
+          title={t("Текущий доступ")}
+          sub={t("Права проверяются в серверных API")}
+        >
           <div className="access-card">
-            <span className="avatar large">АК</span>
+            <span className="avatar large">{t("АК")}</span>
             <div>
-              <strong>{roleLabels[user.role]}</strong>
+              <strong>{t(roleLabels[user.role])}</strong>
               <p>
-                {user.role === "department"
-                  ? `Сфера: ${user.department}`
-                  : "Городское рабочее пространство"}
+                {t(
+                  user.role === "department"
+                    ? t("Сфера: {0}", [user.department])
+                    : "Городское рабочее пространство",
+                )}
               </p>
               <Badge kind={user.workspace === "demo" ? "purple" : "positive"}>
-                {user.workspace.toUpperCase()}
+                {t(user.workspace.toUpperCase())}
               </Badge>
             </div>
           </div>
           <Button onClick={onLogin}>
-            <ShieldCheck size={14} /> Сменить роль / войти
+            <ShieldCheck size={14} /> {t("Сменить роль / войти")}
           </Button>
         </Panel>
-        <Panel title="Защита данных" sub="Минимизация на всех этапах обработки">
+        <Panel
+          title={t("Защита данных")}
+          sub={t("Минимизация на всех этапах обработки")}
+        >
           <div className="checklist compact">
             {[
               "ИИН, телефоны и email маскируются до анализа",
@@ -54,15 +65,15 @@ export function SettingsView({
             ].map((s) => (
               <div key={s}>
                 <ShieldCheck size={14} />
-                {s}
+                {t(s)}
               </div>
             ))}
           </div>
         </Panel>
       </div>
       <Panel
-        title="Справочник подразделений"
-        sub="Базовые сферы ответственности по техническому заданию"
+        title={t("Справочник подразделений")}
+        sub={t("Базовые сферы ответственности по техническому заданию")}
       >
         <ManageDepartments
           directory={state.directory}
@@ -73,27 +84,27 @@ export function SettingsView({
         />
       </Panel>
       <Panel
-        title="Журнал действий"
-        sub="Назначения, модерация, сбор, экспорт и доступ к Direct"
+        title={t("Журнал действий")}
+        sub={t("Назначения, модерация, сбор, экспорт и доступ к Direct")}
       >
         {user.role === "admin" ? (
           <div className="table-scroll">
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Время</th>
-                  <th>Пользователь</th>
-                  <th>Действие</th>
-                  <th>Запись</th>
+                  <th>{t("Время")}</th>
+                  <th>{t("Пользователь")}</th>
+                  <th>{t("Действие")}</th>
+                  <th>{t("Запись")}</th>
                 </tr>
               </thead>
               <tbody>
                 {state.audit.slice(0, 50).map((a) => (
                   <tr key={a.id}>
-                    <td>{date(a.at)}</td>
-                    <td>{a.actor}</td>
-                    <td>{a.action}</td>
-                    <td className="mono">{a.target.slice(0, 12)}</td>
+                    <td>{t(date(a.at))}</td>
+                    <td>{t(a.actor)}</td>
+                    <td>{formatAudit(a.action)}</td>
+                    <td className="mono">{t(a.target.slice(0, 12))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -101,7 +112,7 @@ export function SettingsView({
           </div>
         ) : (
           <Empty
-            title="Журнал доступен администратору"
+            title={t("Журнал доступен администратору")}
             text="Для просмотра аудита требуется соответствующая роль."
           />
         )}

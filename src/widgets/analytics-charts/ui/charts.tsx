@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { date } from "@/shared/lib/format";
 import {
   ResponsiveContainer,
@@ -29,11 +31,12 @@ export function TrendChart({
   data: { date: string; total: number; negative: number }[];
   onClick: () => void;
 }) {
+  useLocale();
   return (
     <div
       className="trend-chart"
       role="img"
-      aria-label="Динамика обращений и негатива по дням"
+      aria-label={t("Динамика обращений и негатива по дням")}
     >
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
@@ -71,7 +74,7 @@ export function TrendChart({
           <Area
             isAnimationActive={false}
             type="monotone"
-            name="Все обращения"
+            name={t("Все обращения")}
             dataKey="total"
             stroke={colors.total}
             fill="url(#trend-fill)"
@@ -80,7 +83,7 @@ export function TrendChart({
           <Line
             isAnimationActive={false}
             type="linear"
-            name="Негатив"
+            name={t("Негатив")}
             dataKey="negative"
             stroke={colors.negative}
             dot={false}
@@ -100,13 +103,14 @@ export function SentimentChart({
   total: number;
   onSelect: (key: string) => void;
 }) {
+  useLocale();
   return (
     <div className="donut-wrap">
       <ResponsiveContainer width="100%" height={190}>
         <PieChart>
           <Pie
             isAnimationActive={false}
-            data={data}
+            data={data.map((entry) => ({ ...entry, name: t(entry.name) }))}
             cx="50%"
             cy="50%"
             innerRadius={68}
@@ -120,12 +124,12 @@ export function SentimentChart({
               <Cell key={d.key} fill={colors[d.key as keyof typeof colors]} />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip labelFormatter={(label) => t(String(label))} />
         </PieChart>
       </ResponsiveContainer>
       <div className="donut-center">
-        <strong>{total}</strong>
-        <span>всего</span>
+        <strong>{t(total)}</strong>
+        <span>{t("всего")}</span>
       </div>
     </div>
   );
@@ -143,6 +147,7 @@ export function WorkloadChart({
   }[];
   onSelect: (name: string) => void;
 }) {
+  useLocale();
   return (
     <div style={{ height: 340 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -164,14 +169,15 @@ export function WorkloadChart({
             type="category"
             width={155}
             dataKey="name"
+            tickFormatter={(value) => t(String(value))}
             tickLine={false}
             axisLine={false}
             tick={{ fontSize: 11, fill: "#64748b" }}
           />
-          <Tooltip />
+          <Tooltip labelFormatter={(label) => t(String(label))} />
           <Bar
             isAnimationActive={false}
-            name="Обращения"
+            name={t("Обращения")}
             dataKey="total"
             fill="#657be0"
             radius={[0, 4, 4, 0]}
@@ -187,6 +193,7 @@ export function DepartmentSentiment({
 }: {
   data: { name: string; negative: number; neutral: number; positive: number }[];
 }) {
+  useLocale();
   return (
     <div style={{ height: 340 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -202,25 +209,25 @@ export function DepartmentSentiment({
             tick={{ fontSize: 10 }}
           />
           <YAxis type="category" dataKey="name" hide />
-          <Tooltip />
+          <Tooltip labelFormatter={(label) => t(String(label))} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Bar
             isAnimationActive={false}
-            name="Негатив"
+            name={t("Негатив")}
             dataKey="negative"
             stackId="s"
             fill={colors.negative}
           />
           <Bar
             isAnimationActive={false}
-            name="Нейтрально"
+            name={t("Нейтрально")}
             dataKey="neutral"
             stackId="s"
             fill={colors.neutral}
           />
           <Bar
             isAnimationActive={false}
-            name="Позитив"
+            name={t("Позитив")}
             dataKey="positive"
             stackId="s"
             fill={colors.positive}

@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { Badge, Empty } from "@/shared/ui";
 import { ArrowRight } from "lucide-react";
 import { type Cluster, priority, priorityLabels } from "@/entities/issue";
@@ -17,19 +19,20 @@ export function IssueTable({
   items: Item[];
   onSelect: (selection: { kind: "item" | "cluster"; id: string }) => void;
 }) {
+  useLocale();
   return (
     <div className="table-scroll">
       <table className={compact ? "compact-table" : "data-table"}>
         <thead>
           <tr>
-            {!compact && <th>Приоритет</th>}
-            <th>Городская проблема</th>
-            {!compact && <th>Подразделение</th>}
-            <th>Сигналы</th>
+            {!compact && <th>{t("Приоритет")}</th>}
+            <th>{t("Городская проблема")}</th>
+            {!compact && <th>{t("Подразделение")}</th>}
+            <th>{t("Сигналы")}</th>
             {!compact && (
               <>
-                <th>За 24 ч.</th>
-                <th>Статус</th>
+                <th>{t("За 24 ч.")}</th>
+                <th>{t("Статус")}</th>
               </>
             )}
             <th />
@@ -48,48 +51,53 @@ export function IssueTable({
                   if (e.key === "Enter")
                     onSelect({ kind: "cluster", id: c.id });
                 }}
-                aria-label={`Открыть: ${c.title}`}
+                aria-label={t("Открыть: {0}", [c.title])}
               >
                 <td className={compact ? "issue-name" : "priority-cell"}>
                   {compact ? (
                     <div className="ranked">
                       <span className="rank">
-                        {String(index + 1).padStart(2, "0")}
+                        {t(String(index + 1).padStart(2, "0"))}
                       </span>
                       <div>
-                        <strong>{c.title}</strong>
+                        <strong>{t(c.title)}</strong>
                         <small>
-                          {c.department} · {c.district}
+                          {t(c.department)} · {t(c.district)}
                         </small>
                       </div>
                     </div>
                   ) : (
-                    <Badge kind={p.label}>{priorityLabels[p.label]}</Badge>
+                    <Badge kind={p.label}>{t(priorityLabels[p.label])}</Badge>
                   )}
                 </td>
                 {!compact && (
                   <td className="issue-name">
-                    <strong>{c.title}</strong>
+                    <strong>{t(c.title)}</strong>
                     <small>
-                      {c.location || "Локация требует уточнения"} · {c.district}
+                      {t(c.location || "Локация требует уточнения")} ·{" "}
+                      {t(c.district)}
                     </small>
                   </td>
                 )}
-                {!compact && <td>{c.department}</td>}
+                {!compact && <td>{t(c.department)}</td>}
                 <td>
-                  <strong>{members.length}</strong>
-                  <small>{p.independent} независимых</small>
+                  <strong>{t(members.length)}</strong>
+                  <small>
+                    {t(p.independent)} {t("независимых")}
+                  </small>
                 </td>
                 {!compact && (
                   <>
                     <td>
                       <span className={p.recent ? "growth" : ""}>
-                        +{p.recent}
+                        +{t(p.recent)}
                       </span>
                       <small>
-                        {p.growth === null
-                          ? "новая активность"
-                          : `${p.growth}% к вчера`}
+                        {t(
+                          p.growth === null
+                            ? "новая активность"
+                            : t("{0}% к вчера", [p.growth]),
+                        )}
                       </small>
                     </td>
                     <td>
@@ -102,14 +110,14 @@ export function IssueTable({
                               : "neutral"
                         }
                       >
-                        {c.status}
+                        {t(c.status)}
                       </Badge>
                     </td>
                   </>
                 )}
                 <td>
                   {compact ? (
-                    <Badge kind={p.label}>{priorityLabels[p.label]}</Badge>
+                    <Badge kind={p.label}>{t(priorityLabels[p.label])}</Badge>
                   ) : (
                     <ArrowRight size={14} />
                   )}

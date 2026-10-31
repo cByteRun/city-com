@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import {
   Loader2,
   Check,
@@ -30,6 +32,7 @@ export function Processing({
   notify: (text: string, error?: boolean) => void;
   onFeed: () => void;
 }) {
+  useLocale();
   const [text, setText] = useState(
     "На ул. Лермонтова 44 нет отопления, дети мерзнут. Северный район.",
   );
@@ -94,7 +97,7 @@ export function Processing({
         throw new Error("Обязательные колонки: text, publishedAt, url");
       setRows(normalized);
       setFilename(file.name);
-      notify(`Файл прочитан: ${normalized.length} записей`);
+      notify(t("Файл прочитан: {0} записей", [normalized.length]));
     } catch (e) {
       notify(
         e instanceof Error ? e.message : "Не удалось прочитать файл",
@@ -116,7 +119,9 @@ export function Processing({
     });
     if (r) {
       setResult(r);
-      notify(`Сохранено ${r.inserted} обращений; пропущено ${r.duplicates}`);
+      notify(
+        t("Сохранено {0} обращений; пропущено {1}", [r.inserted, r.duplicates]),
+      );
     }
     setWorking(false);
   }
@@ -145,8 +150,8 @@ export function Processing({
                   <I size={18} />
                 )}
               </span>
-              <strong>{String(label)}</strong>
-              <small>{user.workspace === "demo" ? "DEMO" : "LIVE"}</small>
+              <strong>{t(String(label))}</strong>
+              <small>{t(user.workspace === "demo" ? "DEMO" : "LIVE")}</small>
               {i < 4 && <ChevronRight size={14} />}
             </div>
           );
@@ -154,16 +159,16 @@ export function Processing({
       </div>
       <div className="two-columns processing-columns">
         <Panel
-          title="Новое обращение"
-          sub={
+          title={t("Новое обращение")}
+          sub={t(
             user.workspace === "demo"
               ? "Локальная демонстрационная обработка без вызова LLM"
-              : "Настоящая классификация через серверный Gemini API"
-          }
+              : "Настоящая классификация через серверный Gemini API",
+          )}
         >
           <div className="form-stack">
             <label className="field-label">
-              Источник
+              {t("Источник")}
               <select
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
@@ -172,13 +177,13 @@ export function Processing({
                   .filter((s) => s.type !== "Direct")
                   .map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.name}
+                      {t(s.name)}
                     </option>
                   ))}
               </select>
             </label>
             <label className="field-label">
-              Текст обращения
+              {t("Текст обращения")}
               <textarea
                 value={text}
                 onChange={(e) => {
@@ -186,12 +191,14 @@ export function Processing({
                   setRows(null);
                 }}
                 rows={5}
-                placeholder="Вставьте публичное обращение на русском или казахском"
+                placeholder={t(
+                  "Вставьте публичное обращение на русском или казахском",
+                )}
               />
             </label>
             <div className="two-fields">
               <label className="field-label">
-                Ссылка на оригинал
+                {t("Ссылка на оригинал")}
                 <input
                   type="url"
                   value={url}
@@ -200,7 +207,7 @@ export function Processing({
                 />
               </label>
               <label className="field-label">
-                Опубликовано
+                {t("Опубликовано")}
                 <input
                   type="datetime-local"
                   value={publishedAt}
@@ -215,7 +222,7 @@ export function Processing({
                   checked={direct}
                   onChange={(e) => setDirect(e.target.checked)}
                 />
-                <LockKeyhole size={14} /> Синтетическое Direct-сообщение
+                <LockKeyhole size={14} /> {t("Синтетическое Direct-сообщение")}
               </label>
             )}
             <label className="checkbox-field permission-check">
@@ -225,9 +232,11 @@ export function Processing({
                 onChange={(e) => setApproved(e.target.checked)}
               />
               <span>
-                {user.workspace === "demo"
-                  ? "Подтверждаю: это синтетические данные для демонстрации."
-                  : "Подтверждаю публичность, право обработки и допустимость передачи обезличенного текста AI-провайдеру."}
+                {t(
+                  user.workspace === "demo"
+                    ? "Подтверждаю: это синтетические данные для демонстрации."
+                    : "Подтверждаю публичность, право обработки и допустимость передачи обезличенного текста AI-провайдеру.",
+                )}
               </span>
             </label>
             <Button
@@ -246,21 +255,25 @@ export function Processing({
               ) : (
                 <Sparkles size={15} />
               )}{" "}
-              {rows
-                ? `Обработать ${rows.length} записей`
-                : "Анализировать обращение"}
+              {t(
+                rows
+                  ? t("Обработать {0} записей", [rows.length])
+                  : "Анализировать обращение",
+              )}
             </Button>
           </div>
         </Panel>
         <div>
           <Panel
-            title="Загрузка выгрузки"
-            sub="CSV / XLSX · до 30 записей за одну операцию"
+            title={t("Загрузка выгрузки")}
+            sub={t("CSV / XLSX · до 30 записей за одну операцию")}
           >
             <label className="upload-zone">
               <Upload size={26} />
-              <strong>{filename || "Выберите файл или перетащите сюда"}</strong>
-              <span>Колонки: text, url, publishedAt, authorId</span>
+              <strong>
+                {t(filename || "Выберите файл или перетащите сюда")}
+              </strong>
+              <span>{t("Колонки: text, url, publishedAt, authorId")}</span>
               <input
                 type="file"
                 accept=".csv,.xlsx"
@@ -271,7 +284,7 @@ export function Processing({
             </label>
             <div className="template-actions">
               <a href="/import-template.csv" download>
-                Скачать шаблон CSV <ArrowDownToLine size={12} />
+                {t("Скачать шаблон CSV")} <ArrowDownToLine size={12} />
               </a>
               {rows && (
                 <button
@@ -281,38 +294,41 @@ export function Processing({
                     setFilename("");
                   }}
                 >
-                  Убрать файл
+                  {t("Убрать файл")}
                 </button>
               )}
             </div>
           </Panel>
           <Panel
-            title="Результат обработки"
-            sub="Изменения сразу появляются во всех дашбордах"
+            title={t("Результат обработки")}
+            sub={t("Изменения сразу появляются во всех дашбордах")}
           >
             {result ? (
               <div className="processing-result">
                 <span className="success-symbol">
                   <Check size={23} />
                 </span>
-                <h3>Обработка завершена</h3>
+                <h3>{t("Обработка завершена")}</h3>
                 <p>
-                  Сохранено: <strong>{result.inserted}</strong> · Дубликаты /
-                  спам: <strong>{result.duplicates}</strong>
+                  {t("Сохранено:")} <strong>{t(result.inserted)}</strong>{" "}
+                  {t("· Дубликаты / спам:")}{" "}
+                  <strong>{t(result.duplicates)}</strong>
                 </p>
                 <Button onClick={onFeed}>
-                  Открыть ленту <ArrowRight size={14} />
+                  {t("Открыть ленту")} <ArrowRight size={14} />
                 </Button>
               </div>
             ) : (
               <div className="processing-placeholder">
                 <Activity size={24} />
                 <p>
-                  {working
-                    ? "Маскирование и анализ…"
-                    : "Результат появится после запуска"}
+                  {t(
+                    working
+                      ? "Маскирование и анализ…"
+                      : "Результат появится после запуска",
+                  )}
                 </p>
-                <small>Низкая уверенность → очередь модерации</small>
+                <small>{t("Низкая уверенность → очередь модерации")}</small>
               </div>
             )}
           </Panel>
@@ -321,8 +337,9 @@ export function Processing({
       <div className="info-note">
         <ShieldCheck size={17} />
         <span>
-          Решения ИИ рекомендательны. Приоритет рассчитывается отдельно,
-          повторные сообщения не увеличивают число независимых жалоб.
+          {t(
+            "Решения ИИ рекомендательны. Приоритет рассчитывается отдельно, повторные сообщения не увеличивают число независимых жалоб.",
+          )}
         </span>
       </div>
     </>

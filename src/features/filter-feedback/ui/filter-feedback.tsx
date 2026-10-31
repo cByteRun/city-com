@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type State, type Workspace } from "@/entities/workspace";
 import { type Filters, defaultFilters } from "../model/types";
 import { type Notify } from "@/shared/api";
@@ -22,12 +24,13 @@ export function GlobalFilters({
   workspace: Workspace;
   notify: Notify;
 }) {
+  useLocale();
   return (
     <section className="filter-panel">
       <div className="filter-title">
         <Filter size={12} />
-        <strong>ОБЩИЕ ФИЛЬТРЫ</strong>
-        <span>Сквозные между экранами</span>
+        <strong>{t("ОБЩИЕ ФИЛЬТРЫ")}</strong>
+        <span>{t("Сквозные между экранами")}</span>
         <div className="filter-saved">
           <button
             onClick={() => {
@@ -38,7 +41,7 @@ export function GlobalFilters({
               notify("Набор фильтров сохранён");
             }}
           >
-            Сохранить
+            {t("Сохранить")}
           </button>
           <button
             onClick={() => {
@@ -49,13 +52,13 @@ export function GlobalFilters({
               } else notify("Сохранённых фильтров пока нет");
             }}
           >
-            Мои фильтры
+            {t("Мои фильтры")}
           </button>
         </div>
       </div>
       <div className="filters">
         <Select
-          label="Период"
+          label={t("Период")}
           value={filters.period}
           onChange={(v) => updateFilter("period", v || "30")}
           options={[
@@ -66,7 +69,7 @@ export function GlobalFilters({
           ]}
         />
         <Select
-          label="Все источники"
+          label={t("Все источники")}
           value={filters.source}
           onChange={(v) => updateFilter("source", v)}
           options={state.sources.map((s) => ({
@@ -75,7 +78,7 @@ export function GlobalFilters({
           }))}
         />
         <Select
-          label="Все проблемы"
+          label={t("Все проблемы")}
           value={filters.problem}
           onChange={(v) => updateFilter("problem", v)}
           options={state.clusters.map((c) => ({
@@ -84,19 +87,19 @@ export function GlobalFilters({
           }))}
         />
         <Select
-          label="Все подразделения"
+          label={t("Все подразделения")}
           value={filters.department}
           onChange={(v) => updateFilter("department", v)}
           options={[...departments]}
         />
         <Select
-          label="Все районы"
+          label={t("Все районы")}
           value={filters.district}
           onChange={(v) => updateFilter("district", v)}
           options={districts}
         />
         <Select
-          label="Любая тональность"
+          label={t("Любая тональность")}
           value={filters.sentiment}
           onChange={(v) => updateFilter("sentiment", v)}
           options={Object.entries(sentimentLabels).map(([value, label]) => ({
@@ -106,7 +109,7 @@ export function GlobalFilters({
         />
         <div className="filter-break" />
         <Select
-          label="Любой приоритет"
+          label={t("Любой приоритет")}
           value={filters.priority}
           onChange={(v) => updateFilter("priority", v)}
           options={Object.entries(priorityLabels).map(([value, label]) => ({
@@ -115,7 +118,7 @@ export function GlobalFilters({
           }))}
         />
         <Select
-          label="Любой статус"
+          label={t("Любой статус")}
           value={filters.status}
           onChange={(v) => updateFilter("status", v)}
           options={["Новое", "Передано", "В работе", "Решено", "Закрыто"]}
@@ -124,8 +127,8 @@ export function GlobalFilters({
         <label className="search-field">
           <Search size={13} />
           <input
-            aria-label="Поиск по обращениям"
-            placeholder="Поиск..."
+            aria-label={t("Поиск по обращениям")}
+            placeholder={t("Поиск...")}
             value={filters.q}
             onChange={(e) => updateFilter("q", e.target.value)}
           />
@@ -134,7 +137,7 @@ export function GlobalFilters({
           className="text-reset"
           onClick={() => setFilters(defaultFilters)}
         >
-          Сбросить
+          {t("Сбросить")}
         </button>
       </div>
     </section>

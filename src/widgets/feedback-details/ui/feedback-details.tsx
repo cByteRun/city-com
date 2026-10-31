@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { ReviewClassification } from "@/features/review-classification";
 import { AssignIssue } from "@/features/assign-issue";
 import { DeleteFeedback } from "@/features/delete-feedback";
@@ -42,6 +44,7 @@ export function Detail({
   onSelect: (v: { kind: "item" | "cluster"; id: string }) => void;
   onClose: () => void;
 }) {
+  useLocale();
   const item =
     selected.kind === "item"
       ? state.items.find((i) => i.id === selected.id)
@@ -52,7 +55,7 @@ export function Detail({
 
   const [saved, setSaved] = useState("");
   const canEdit = user.role !== "viewer";
-  if (!cluster) return <Empty title="Запись больше не доступна" />;
+  if (!cluster) return <Empty title={t("Запись больше не доступна")} />;
   const members = state.items.filter((i) => i.clusterId === cluster.id);
   const p = priority(cluster, state.items);
   const allPrivate = members.every((i) => i.private);
@@ -60,14 +63,14 @@ export function Detail({
     <div className="sheet-body detail">
       <div className="detail-meta">
         <Badge kind={p.label}>
-          {priorityLabels[p.label]} приоритет · {p.score}
+          {t(priorityLabels[p.label])} {t("приоритет ·")} {t(p.score)}
         </Badge>
-        <Badge kind="blue">{cluster.status}</Badge>
+        <Badge kind="blue">{t(cluster.status)}</Badge>
       </div>
-      <h2>{item ? item.topic : cluster.title}</h2>
+      <h2>{t(item ? item.topic : cluster.title)}</h2>
       <p className="detail-location">
-        {cluster.district}
-        {cluster.location && !allPrivate ? ` · ${cluster.location}` : ""}
+        {t(cluster.district)}
+        {t(cluster.location && !allPrivate ? ` · ${cluster.location}` : "")}
       </p>
       {item ? (
         <>
@@ -84,51 +87,58 @@ export function Detail({
             )}
             <div>
               <span>
-                {item.language === "kk" ? "Қазақша" : "Русский"} ·{" "}
-                {date(item.publishedAt)}
+                {t(item.language === "kk" ? "Қазақша" : "Русский")} ·{" "}
+                {t(date(item.publishedAt))}
               </span>
               {item.url ? (
                 <a href={item.url} target="_blank" rel="noreferrer">
-                  Оригинал <ExternalLink size={12} />
+                  {t("Оригинал")} <ExternalLink size={12} />
                 </a>
               ) : (
                 <span>
-                  {user.workspace === "demo"
-                    ? "Синтетическая запись DEMO"
-                    : "Ссылка не предоставлена"}
+                  {t(
+                    user.workspace === "demo"
+                      ? "Синтетическая запись DEMO"
+                      : "Ссылка не предоставлена",
+                  )}
                 </span>
               )}
             </div>
           </div>
           <div className="detail-stat-grid">
             <div>
-              <small>Подразделение</small>
-              <strong>{item.department}</strong>
-              <span>Уверенность {Math.round(item.confidence * 100)}%</span>
+              <small>{t("Подразделение")}</small>
+              <strong>{t(item.department)}</strong>
+              <span>
+                {t("Уверенность")} {t(Math.round(item.confidence * 100))}%
+              </span>
             </div>
             <div>
-              <small>Тональность</small>
+              <small>{t("Тональность")}</small>
               <Badge kind={item.sentiment}>
-                {sentimentLabels[item.sentiment]}
+                {t(sentimentLabels[item.sentiment])}
               </Badge>
               <span>
-                Уверенность {Math.round(item.sentimentConfidence * 100)}% ·{" "}
-                {item.sentimentScore.toFixed(2)}
+                {t("Уверенность")}{" "}
+                {t(Math.round(item.sentimentConfidence * 100))}% ·{" "}
+                {t(item.sentimentScore.toFixed(2))}
               </span>
             </div>
           </div>
           <div className="explanation">
             <h3>
-              <Sparkles size={14} /> Обоснование классификации
+              <Sparkles size={14} /> {t("Обоснование классификации")}
             </h3>
             <p>{item.reason}</p>
-            <h3>Обоснование тональности</h3>
+            <h3>{t("Обоснование тональности")}</h3>
             <p>{item.sentimentReason}</p>
             <small>
-              {item.engine} · {item.latencyMs} мс ·{" "}
-              {item.reviewed
-                ? "Проверено оператором"
-                : "Самооценка модели, не вероятность"}
+              {t(item.engine)} · {t(item.latencyMs)} {t("мс ·")}{" "}
+              {t(
+                item.reviewed
+                  ? "Проверено оператором"
+                  : "Самооценка модели, не вероятность",
+              )}
             </small>
           </div>
           {canEdit && (
@@ -147,9 +157,12 @@ export function Detail({
           >
             <Layers3 size={16} />
             <div>
-              <strong>Проблема: {cluster.title}</strong>
+              <strong>
+                {t("Проблема:")} {t(cluster.title)}
+              </strong>
               <small>
-                {members.length} обращений · {p.independent} независимых
+                {t(members.length)} {t("обращений ·")} {t(p.independent)}{" "}
+                {t("независимых")}
               </small>
             </div>
             <ArrowRight size={16} />
@@ -167,41 +180,46 @@ export function Detail({
       ) : (
         <>
           <div className="cluster-summary">
-            <h3>Что происходит</h3>
+            <h3>{t("Что происходит")}</h3>
             <p>
-              {allPrivate
-                ? "Приватные обращения — только агрегированные показатели."
-                : cluster.summary}
+              {t(
+                allPrivate
+                  ? "Приватные обращения — только агрегированные показатели."
+                  : cluster.summary,
+              )}
             </p>
             <div className="detail-stat-grid">
               <div>
-                <small>Обнаружено</small>
-                <strong>{date(cluster.createdAt)}</strong>
+                <small>{t("Обнаружено")}</small>
+                <strong>{t(date(cluster.createdAt))}</strong>
               </div>
               <div>
-                <small>Независимые сигналы</small>
-                <strong>{p.independent}</strong>
+                <small>{t("Независимые сигналы")}</small>
+                <strong>{t(p.independent)}</strong>
               </div>
             </div>
             <span className="early-badge">
-              <Zap size={13} /> +{p.recent} новых обращений за 24 часа
+              <Zap size={13} /> +{t(p.recent)} {t("новых обращений за 24 часа")}
             </span>
           </div>
           <section className="priority-factors">
-            <h3>Почему такой приоритет?</h3>
-            <p>Прозрачный расчёт · {p.score} из 100</p>
+            <h3>{t("Почему такой приоритет?")}</h3>
+            <p>
+              {t("Прозрачный расчёт ·")} {t(p.score)} {t("из 100")}
+            </p>
             {Object.entries(p.factors).map(([name, value]) => (
               <div key={name}>
-                <span>{name}</span>
+                <span>{t(name)}</span>
                 <div className="bar-track">
                   <div style={{ width: `${(value / 40) * 100}%` }} />
                 </div>
-                <strong>+{value}</strong>
+                <strong>+{t(value)}</strong>
               </div>
             ))}
             <small>
-              Без метрик охвата вклад охвата равен нулю. Негатив сам по себе не
-              делает проблему срочной.
+              {t(
+                "Без метрик охвата вклад охвата равен нулю. Негатив сам по себе не делает проблему срочной.",
+              )}
             </small>
           </section>
           <AssignIssue
@@ -214,7 +232,7 @@ export function Detail({
           />
           <section className="originals">
             <h3>
-              Исходные обращения <span>{members.length}</span>
+              {t("Исходные обращения")} <span>{t(members.length)}</span>
             </h3>
             {members.map((i) => (
               <button
@@ -225,15 +243,16 @@ export function Detail({
                   <span>
                     {i.private ? (
                       <>
-                        <LockKeyhole size={12} /> Direct · текст ограничен
+                        <LockKeyhole size={12} />{" "}
+                        {t("Direct · текст ограничен")}
                       </>
                     ) : (
                       i.text
                     )}
                   </span>
                   <small>
-                    {state.sources.find((s) => s.id === i.sourceId)?.name} ·{" "}
-                    {date(i.publishedAt)}
+                    {t(state.sources.find((s) => s.id === i.sourceId)?.name)} ·{" "}
+                    {t(date(i.publishedAt))}
                   </small>
                 </div>
                 <ChevronRight size={14} />
@@ -245,14 +264,15 @@ export function Detail({
       {saved && (
         <p role="status" className="inline-success">
           <Check size={14} />
-          {saved}
+          {t(saved)}
         </p>
       )}
       <div className="privacy-note">
         <ShieldCheck size={15} />
         <span>
-          Рекомендация ИИ. Итоговое решение принимает сотрудник. Все изменения
-          журналируются.
+          {t(
+            "Рекомендация ИИ. Итоговое решение принимает сотрудник. Все изменения журналируются.",
+          )}
         </span>
       </div>
     </div>

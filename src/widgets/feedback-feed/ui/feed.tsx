@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { Select, Empty, Button, Panel, Badge } from "@/shared/ui";
 import { ChevronLeft, ChevronRight, LockKeyhole } from "lucide-react";
 import { type Item, sentimentLabels } from "@/entities/feedback";
@@ -17,6 +19,7 @@ export function Feed({
   onSelect: (id: string) => void;
   nested?: boolean;
 }) {
+  useLocale();
   const [sort, setSort] = useState("new");
   const [group, setGroup] = useState("");
   const [index, setIndex] = useState(0);
@@ -36,12 +39,14 @@ export function Feed({
     <>
       <div className="table-toolbar">
         <div>
-          <strong>{items.length} обращений</strong>
+          <strong>
+            {t(items.length)} {t("обращений")}
+          </strong>
           <span> · RU / KZ</span>
         </div>
         <div>
           <Select
-            label="Группировка"
+            label={t("Группировка")}
             value={group}
             onChange={setGroup}
             options={[
@@ -52,7 +57,7 @@ export function Feed({
             ]}
           />
           <Select
-            label="Сортировка"
+            label={t("Сортировка")}
             value={sort}
             onChange={setSort}
             options={[
@@ -67,12 +72,12 @@ export function Feed({
         <table className="data-table feed-table">
           <thead>
             <tr>
-              <th>Дата / источник</th>
-              <th>Обращение</th>
-              <th>Подразделение</th>
-              <th>Тональность</th>
-              <th>Уверенность</th>
-              <th>Статус</th>
+              <th>{t("Дата / источник")}</th>
+              <th>{t("Обращение")}</th>
+              <th>{t("Подразделение")}</th>
+              <th>{t("Тональность")}</th>
+              <th>{t("Уверенность")}</th>
+              <th>{t("Статус")}</th>
               <th />
             </tr>
           </thead>
@@ -102,9 +107,15 @@ export function Feed({
       </div>
       <div className="pagination">
         <span>
-          {items.length
-            ? `${index * 12 + 1}–${Math.min((index + 1) * 12, items.length)} из ${items.length}`
-            : "0 обращений"}
+          {t(
+            items.length
+              ? t("{0}–{1} из {2}", [
+                  index * 12 + 1,
+                  Math.min((index + 1) * 12, items.length),
+                  items.length,
+                ])
+              : "0 обращений",
+          )}
         </span>
         <div>
           <Button
@@ -112,17 +123,17 @@ export function Feed({
             disabled={index === 0}
             onClick={() => setIndex((i) => i - 1)}
           >
-            <ChevronLeft size={14} /> Назад
+            <ChevronLeft size={14} /> {t("Назад")}
           </Button>
           <span>
-            {pages ? index + 1 : 0} / {pages}
+            {t(pages ? index + 1 : 0)} / {t(pages)}
           </span>
           <Button
             size="sm"
             disabled={index + 1 >= pages}
             onClick={() => setIndex((i) => i + 1)}
           >
-            Далее <ChevronRight size={14} />
+            {t("Далее")} <ChevronRight size={14} />
           </Button>
         </div>
       </div>
@@ -137,13 +148,13 @@ export function Feed({
     return "";
   }
   return nested ? (
-    <>{content}</>
+    <>{t(content)}</>
   ) : (
     <Panel
-      title="Все обращения"
-      sub="Классификация, тональность и оригинальные публикации"
+      title={t("Все обращения")}
+      sub={t("Классификация, тональность и оригинальные публикации")}
     >
-      {content}
+      {t(content)}
     </Panel>
   );
 }
@@ -160,11 +171,12 @@ function FeedRow({
   onSelect: () => void;
   group: string;
 }) {
+  useLocale();
   return (
     <>
       {group && (
         <tr className="group-row">
-          <td colSpan={7}>{group}</td>
+          <td colSpan={7}>{t(group)}</td>
         </tr>
       )}
       <tr
@@ -173,43 +185,47 @@ function FeedRow({
         onKeyDown={(e) => {
           if (e.key === "Enter") onSelect();
         }}
-        aria-label={`Обращение ${item.id}`}
+        aria-label={t("Обращение {0}", [item.id])}
       >
         <td className="date-cell">
-          <strong>{date(item.publishedAt)}</strong>
+          <strong>{t(date(item.publishedAt))}</strong>
           <small>
-            {item.private && <LockKeyhole size={10} />} {source}
+            {item.private && <LockKeyhole size={10} />} {t(source)}
           </small>
         </td>
         <td className="item-text">
           <p>
-            {item.private ? "Приватное обращение · только агрегаты" : item.text}
+            {item.private
+              ? t("Приватное обращение · только агрегаты")
+              : item.text}
           </p>
           <small>
             <span className="language-tag">
-              {item.language === "kk" ? "KZ" : "RU"}
+              {t(item.language === "kk" ? "KZ" : "RU")}
             </span>
-            {item.topic}
+            {t(item.topic)}
           </small>
         </td>
         <td>
-          {item.department}
-          <small>{item.district}</small>
+          {t(item.department)}
+          <small>{t(item.district)}</small>
         </td>
         <td>
-          <Badge kind={item.sentiment}>{sentimentLabels[item.sentiment]}</Badge>
+          <Badge kind={item.sentiment}>
+            {t(sentimentLabels[item.sentiment])}
+          </Badge>
         </td>
         <td>
           <span
             className={item.confidence < 0.6 ? "confidence-low" : "confidence"}
           >
-            {Math.round(item.confidence * 100)}%
+            {t(Math.round(item.confidence * 100))}%
           </span>
-          <small>{item.reviewed ? "Подтверждено" : "Оценка модели"}</small>
+          <small>{t(item.reviewed ? "Подтверждено" : "Оценка модели")}</small>
         </td>
         <td>
           <Badge kind={cluster?.status === "Решено" ? "positive" : "neutral"}>
-            {cluster?.status || "Новое"}
+            {t(cluster?.status || "Новое")}
           </Badge>
         </td>
         <td>

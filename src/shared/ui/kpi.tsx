@@ -1,4 +1,6 @@
 "use client";
+import { t } from "@/shared/i18n";
+
 import { ArrowUpRight } from "lucide-react";
 import { type ReactNode } from "react";
 export const kpi = (
@@ -11,12 +13,12 @@ export const kpi = (
 ) => (
   <button className="kpi" onClick={click} disabled={!click}>
     <div className="kpi-top">
-      <span>{label}</span>
-      <i className={`kpi-icon ${tone}`}>{icon}</i>
+      <span>{t(label)}</span>
+      <i className={`kpi-icon ${tone}`}>{t(icon)}</i>
     </div>
-    <strong>{value}</strong>
+    <strong>{t(value)}</strong>
     <div className="kpi-bottom">
-      <span>{sub}</span>
+      <span>{t(sub)}</span>
       {click && <ArrowUpRight size={12} />}
     </div>
   </button>

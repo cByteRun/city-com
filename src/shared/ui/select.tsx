@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { ChevronDown } from "lucide-react";
 
 export function Select({
@@ -14,23 +16,24 @@ export function Select({
   options: (string | { value: string; label: string })[];
   className?: string;
 }) {
+  useLocale();
   return (
     <label className={`select-wrap ${className}`}>
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{t(label)}</span>
       <select
-        aria-label={label}
+        aria-label={t(label)}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
-        <option value="">{label}</option>
+        <option value="">{t(label)}</option>
         {options.map((o) =>
           typeof o === "string" ? (
             <option key={o} value={o}>
-              {o}
+              {t(o)}
             </option>
           ) : (
             <option key={o.value} value={o.value}>
-              {o.label}
+              {t(o.label)}
             </option>
           ),
         )}

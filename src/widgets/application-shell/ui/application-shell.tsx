@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale, setLocale, type Locale } from "@/shared/i18n";
+
 import { type ReactNode } from "react";
 import { type User, type Role, roleLabels } from "@/entities/session";
 import { type Workspace } from "@/entities/workspace";
@@ -50,6 +52,7 @@ export function ApplicationShell({
     items: readonly (readonly [string, string, LucideIcon])[];
   }[];
 }) {
+  const locale = useLocale();
   return (
     <>
       <aside className={`sidebar ${mobile ? "sidebar-open" : ""}`}>
@@ -68,7 +71,7 @@ export function ApplicationShell({
             <strong>
               citycom<span>.</span>
             </strong>
-            <small>CITY INTELLIGENCE</small>
+            <small>{t("CITY INTELLIGENCE")}</small>
           </span>
         </a>
         <button className="city-switch" onClick={() => setHelp(true)}>
@@ -76,12 +79,12 @@ export function ApplicationShell({
             <Building2 size={16} />
           </span>
           <span>
-            <strong>Павлодар</strong>
-            <small>Акимат города</small>
+            <strong>{t("Павлодар")}</strong>
+            <small>{t("Акимат города")}</small>
           </span>
           <ChevronDown size={13} />
         </button>
-        <div className="workspace-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+        <div className="workspace-label">{t("РАБОЧЕЕ ПРОСТРАНСТВО")}</div>
         <div className="workspace-switch">
           <button
             className={user?.workspace === "demo" ? "active" : ""}
@@ -104,7 +107,7 @@ export function ApplicationShell({
         <nav>
           {navigation.map((group) => (
             <div key={group.group} className="nav-group">
-              <p>{group.group}</p>
+              <p>{t(group.group)}</p>
               {group.items.map(([id, label, Icon]) => (
                 <button
                   key={id}
@@ -112,9 +115,9 @@ export function ApplicationShell({
                   onClick={() => go(id)}
                 >
                   <Icon size={15} />
-                  <span>{label}</span>
+                  <span>{t(label)}</span>
                   {id === "moderation" && reviewCount > 0 && (
-                    <b>{reviewCount}</b>
+                    <b>{t(reviewCount)}</b>
                   )}
                 </button>
               ))}
@@ -124,18 +127,20 @@ export function ApplicationShell({
         <div className="sidebar-bottom">
           <div className="usp">
             <Sparkles size={19} />
-            <strong>AI-assisted governance</strong>
+            <strong>{t("AI-assisted governance")}</strong>
             <p>
-              Обнаруживать раньше.
+              {t("Обнаруживать раньше.")}
               <br />
-              Реагировать точнее.
+              {t("Реагировать точнее.")}
             </p>
           </div>
           <div className="system-status">
             <span className="status-dot" />{" "}
-            {user?.workspace === "demo"
-              ? "Демонстрационный режим"
-              : "Рабочее пространство LIVE"}
+            {t(
+              user?.workspace === "demo"
+                ? "Демонстрационный режим"
+                : "Рабочее пространство LIVE",
+            )}
             <span>v0.1</span>
           </div>
         </div>
@@ -143,7 +148,7 @@ export function ApplicationShell({
       {mobile && (
         <button
           className="mobile-overlay"
-          aria-label="Закрыть меню"
+          aria-label={t("Закрыть меню")}
           onClick={() => setMobile(false)}
         />
       )}
@@ -152,23 +157,41 @@ export function ApplicationShell({
           <div className="breadcrumb">
             <button
               className="icon-button mobile-toggle"
-              aria-label="Открыть меню"
+              aria-label={t("Открыть меню")}
               onClick={() => setMobile(true)}
             >
               <Menu size={20} />
             </button>
-            <span>Городская аналитика</span>
+            <span>{t("Городская аналитика")}</span>
             <ChevronRight size={12} />
-            <strong>{title}</strong>
+            <strong>{t(title)}</strong>
           </div>
           <div className="topbar-right">
+            <label className="language-switch">
+              <span className="sr-only">{t("Язык интерфейса")}</span>
+              <select
+                aria-label={t("Язык интерфейса")}
+                value={locale}
+                onChange={(event) => setLocale(event.target.value as Locale)}
+              >
+                <option value="en" lang="en">
+                  EN
+                </option>
+                <option value="ru" lang="ru">
+                  RU
+                </option>
+                <option value="kk" lang="kk">
+                  KZ
+                </option>
+              </select>
+            </label>
             <Badge kind={user?.workspace === "demo" ? "purple" : "positive"}>
-              {user?.workspace === "demo" ? "Демо-набор" : "LIVE"}
+              {t(user?.workspace === "demo" ? "Демо-набор" : "LIVE")}
             </Badge>
             <button
               className="icon-button theme-toggle"
               onClick={() => setDark((v) => !v)}
-              aria-label="Переключить тему"
+              aria-label={t("Переключить тему")}
             >
               {dark ? <Sun size={17} /> : <Moon size={17} />}
             </button>
@@ -180,13 +203,13 @@ export function ApplicationShell({
                 setLogin(true);
               }}
             >
-              <span className="avatar">АК</span>
-              <span>{user ? roleLabels[user.role] : "Войти"}</span>
+              <span className="avatar">{t("АК")}</span>
+              <span>{t(user ? roleLabels[user.role] : "Войти")}</span>
               <ChevronDown size={12} />
             </button>
           </div>
         </header>
-        <main>{children}</main>
+        <main>{t(children)}</main>
       </div>
     </>
   );

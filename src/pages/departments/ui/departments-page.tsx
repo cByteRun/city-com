@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import {
   Building2,
   BarChart3,
@@ -35,40 +37,50 @@ export function DepartmentsPage({
     positive: number;
   }[];
 }) {
+  const locale = useLocale();
   return (
     <>
       <div className="kpi-grid four">
-        {kpi(
-          "Подразделений с обращениями",
-          byDepartment.length,
-          "В выбранном периоде",
-          <Building2 size={18} />,
+        {t(
+          kpi(
+            "Подразделений с обращениями",
+            byDepartment.length,
+            "В выбранном периоде",
+            <Building2 size={18} />,
+          ),
         )}
-        {kpi(
-          "Наибольшая нагрузка",
-          byDepartment[0]?.total || 0,
-          byDepartment[0]?.name || "Нет данных",
-          <BarChart3 size={18} />,
-          () =>
-            byDepartment[0] && go("feed", { department: byDepartment[0].name }),
+        {t(
+          kpi(
+            "Наибольшая нагрузка",
+            byDepartment[0]?.total || 0,
+            byDepartment[0]?.name || "Нет данных",
+            <BarChart3 size={18} />,
+            () =>
+              byDepartment[0] &&
+              go("feed", { department: byDepartment[0].name }),
+          ),
         )}
-        {kpi(
-          "Среднее время передачи",
-          averageAssignment(clusters),
-          "От публикации до назначения",
-          <Clock size={18} />,
+        {t(
+          kpi(
+            "Среднее время передачи",
+            averageAssignment(clusters, locale),
+            "От публикации до назначения",
+            <Clock size={18} />,
+          ),
         )}
-        {kpi(
-          "Доля решённых",
-          `${pct(resolved, items.length)}%`,
-          `${resolved} обращений`,
-          <CheckCheck size={18} />,
+        {t(
+          kpi(
+            "Доля решённых",
+            `${pct(resolved, items.length)}%`,
+            t("{0} обращений", [resolved]),
+            <CheckCheck size={18} />,
+          ),
         )}
       </div>
       <div className="dashboard-grid">
         <Panel
-          title="Нагрузка по подразделениям"
-          sub="Нажмите на столбец, чтобы открыть обращения"
+          title={t("Нагрузка по подразделениям")}
+          sub={t("Нажмите на столбец, чтобы открыть обращения")}
         >
           <WorkloadChart
             data={byDepartment}
@@ -76,26 +88,28 @@ export function DepartmentsPage({
           />
         </Panel>
         <Panel
-          title="Тональность по подразделениям"
-          sub="Доли позитивных, нейтральных и негативных сигналов"
+          title={t("Тональность по подразделениям")}
+          sub={t("Доли позитивных, нейтральных и негативных сигналов")}
         >
           <DepartmentSentiment data={byDepartment} />
         </Panel>
       </div>
       <Panel
-        title="Результаты работы подразделений"
-        sub="Рейтинг по нагрузке · показатели рассчитаны по текущим фильтрам"
+        title={t("Результаты работы подразделений")}
+        sub={t(
+          "Рейтинг по нагрузке · показатели рассчитаны по текущим фильтрам",
+        )}
       >
         <div className="table-scroll">
           <table className="data-table">
             <thead>
               <tr>
-                <th>Подразделение</th>
-                <th>Обращения</th>
-                <th>Негатив</th>
-                <th>Высокий приоритет</th>
-                <th>Время передачи</th>
-                <th>Решено</th>
+                <th>{t("Подразделение")}</th>
+                <th>{t("Обращения")}</th>
+                <th>{t("Негатив")}</th>
+                <th>{t("Высокий приоритет")}</th>
+                <th>{t("Время передачи")}</th>
+                <th>{t("Решено")}</th>
                 <th />
               </tr>
             </thead>
@@ -109,32 +123,34 @@ export function DepartmentsPage({
                     onClick={() => go("feed", { department: d.name })}
                   >
                     <td className="issue-name">
-                      <strong>{d.name}</strong>
+                      <strong>{t(d.name)}</strong>
                     </td>
-                    <td>{d.total}</td>
-                    <td>{pct(d.negative, d.total)}%</td>
+                    <td>{t(d.total)}</td>
+                    <td>{t(pct(d.negative, d.total))}%</td>
                     <td>
-                      {
+                      {t(
                         depItems.filter((i) =>
                           list.some(
                             (c) =>
                               c.id === i.clusterId &&
                               priority(c, state.items).label === "high",
                           ),
-                        ).length
-                      }
-                    </td>
-                    <td>{averageAssignment(list)}</td>
-                    <td>
-                      {pct(
-                        depItems.filter((i) =>
-                          list.some(
-                            (c) =>
-                              c.id === i.clusterId &&
-                              ["Решено", "Закрыто"].includes(c.status),
-                          ),
                         ).length,
-                        d.total,
+                      )}
+                    </td>
+                    <td>{t(averageAssignment(list, locale))}</td>
+                    <td>
+                      {t(
+                        pct(
+                          depItems.filter((i) =>
+                            list.some(
+                              (c) =>
+                                c.id === i.clusterId &&
+                                ["Решено", "Закрыто"].includes(c.status),
+                            ),
+                          ).length,
+                          d.total,
+                        ),
                       )}
                       %
                     </td>

@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Workspace } from "@/entities/workspace";
 import { type User, type Role, roleLabels } from "@/entities/session";
 import { useState, useEffect } from "react";
@@ -24,6 +26,7 @@ export function WorkspaceAccess({
   onEnter: (workspace: Workspace, role: Role, password: string) => void;
   onLogout: () => void;
 }) {
+  useLocale();
   const [loginRole, setLoginRole] = useState<Role>("admin");
   const [password, setPassword] = useState("");
   useEffect(() => {
@@ -36,43 +39,45 @@ export function WorkspaceAccess({
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Доступ к рабочему пространству"
+      title={t("Доступ к рабочему пространству")}
     >
       <div className="sheet-body">
         <div className="info-note">
           <ShieldCheck size={18} />
           <p>
-            {workspace === "demo"
-              ? "Смена роли действует только на синтетические данные. Права проверяются сервером."
-              : "Для LIVE требуется пароль выбранной роли, настроенный администратором."}
+            {t(
+              workspace === "demo"
+                ? "Смена роли действует только на синтетические данные. Права проверяются сервером."
+                : "Для LIVE требуется пароль выбранной роли, настроенный администратором.",
+            )}
           </p>
         </div>
         <label className="field-label">
-          Рабочее пространство
+          {t("Рабочее пространство")}
           <select
             value={workspace}
             onChange={(e) => onWorkspaceChange(e.target.value as Workspace)}
           >
-            <option value="demo">DEMO · синтетические данные</option>
-            <option value="live">LIVE · реальные данные</option>
+            <option value="demo">{t("DEMO · синтетические данные")}</option>
+            <option value="live">{t("LIVE · реальные данные")}</option>
           </select>
         </label>
         <label className="field-label">
-          Роль
+          {t("Роль")}
           <select
             value={loginRole}
             onChange={(e) => setLoginRole(e.target.value as Role)}
           >
             {Object.entries(roleLabels).map(([v, l]) => (
               <option key={v} value={v}>
-                {l}
+                {t(l)}
               </option>
             ))}
           </select>
         </label>
         {workspace === "live" && (
           <label className="field-label">
-            Пароль
+            {t("Пароль")}
             <input
               type="password"
               value={password}
@@ -89,7 +94,7 @@ export function WorkspaceAccess({
           disabled={busy}
           onClick={() => onEnter(workspace, loginRole, password)}
         >
-          Войти в {workspace}
+          {t("Войти в")} {t(workspace)}
           <ArrowRight size={14} />
         </Button>
         {user && (
@@ -100,7 +105,7 @@ export function WorkspaceAccess({
               onOpenChange(false);
             }}
           >
-            <LogOut size={14} /> Выйти
+            <LogOut size={14} /> {t("Выйти")}
           </Button>
         )}
       </div>

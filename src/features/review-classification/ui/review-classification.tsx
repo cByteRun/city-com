@@ -1,4 +1,6 @@
 "use client";
+import { t, useLocale } from "@/shared/i18n";
+
 import { type Item, sentimentLabels } from "@/entities/feedback";
 import { type User } from "@/entities/session";
 import { type Action, type Notify } from "@/shared/api";
@@ -21,14 +23,15 @@ export function ReviewClassification({
   notify: Notify;
   onSaved: (message: string) => void;
 }) {
+  useLocale();
   const [department, setDepartment] = useState(item.department);
   const [sentiment, setSentiment] = useState(item.sentiment);
   const [reason, setReason] = useState("");
   return (
     <div className="review-form">
-      <h3>Проверка оператором</h3>
+      <h3>{t("Проверка оператором")}</h3>
       <label className="field-label">
-        Подразделение
+        {t("Подразделение")}
         <select
           value={department}
           onChange={(e) => setDepartment(e.target.value)}
@@ -36,30 +39,32 @@ export function ReviewClassification({
           {departments
             .filter((d) => user.role !== "department" || d === user.department)
             .map((d) => (
-              <option key={d}>{d}</option>
+              <option key={d} value={d}>
+                {t(d)}
+              </option>
             ))}
         </select>
       </label>
       <label className="field-label">
-        Тональность
+        {t("Тональность")}
         <select
           value={sentiment}
           onChange={(e) => setSentiment(e.target.value as Item["sentiment"])}
         >
           {Object.entries(sentimentLabels).map(([v, l]) => (
             <option key={v} value={v}>
-              {l}
+              {t(l)}
             </option>
           ))}
         </select>
       </label>
       <label className="field-label">
-        Почему это решение верно?
+        {t("Почему это решение верно?")}
         <textarea
           rows={2}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder="Основание подтверждения или исправления"
+          placeholder={t("Основание подтверждения или исправления")}
         />
       </label>
       <Button
@@ -79,7 +84,7 @@ export function ReviewClassification({
           }
         }}
       >
-        <Check size={14} /> Подтвердить классификацию
+        <Check size={14} /> {t("Подтвердить классификацию")}
       </Button>
     </div>
   );
