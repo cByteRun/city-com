@@ -9,6 +9,7 @@ export interface Filters {
   status: string;
   problem: string;
   q: string;
+  queue: string;
 }
 export const defaultFilters: Filters = {
   period: "30",
@@ -20,4 +21,5 @@ export const defaultFilters: Filters = {
   status: "",
   problem: "",
   q: "",
+  queue: "",
 };

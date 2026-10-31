@@ -37,7 +37,11 @@
     ".next-prod/types/**/*.ts",
     ".next-prod/dev/types/**/*.ts",
     ".next-fsd/types/**/*.ts",
-    ".next-fsd/dev/types/**/*.ts"
+    ".next-fsd/dev/types/**/*.ts",
+    ".next-design/types/**/*.ts",
+    ".next-design/dev/types/**/*.ts",
+    ".next-design-build/types/**/*.ts",
+    ".next-design-build/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

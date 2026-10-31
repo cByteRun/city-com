@@ -121,3 +121,40 @@ test("RU/KZ smoke classifier meets targets on a small labeled set only", () => {
   assert.ok(deps / gold.length >= 0.75, `${deps}/${gold.length}`);
 });
 
+test("operational queues preserve department scope and exclude completed issues from triage", () => {
+  const s = seed(true);
+  const now = Date.now();
+  const waiting = filterItems(s, { queue: "waiting", department: "ЖКХ" }, now);
+  const expected = s.clusters.filter(
+    (c) =>
+      c.department === "ЖКХ" &&
+      !c.assignedAt &&
+      !["Решено", "Закрыто"].includes(c.status),
+  );
+  assert.ok(waiting.length > 0);
+  assert.deepEqual(
+    new Set(waiting.map((i) => i.clusterId)),
+    new Set(expected.map((c) => c.id)),
+  );
+  const completed = filterItems(s, { queue: "resolved" }, now);
+  assert.ok(completed.length > 0);
+  assert.ok(
+    completed.every((i) =>
+      s.clusters.some(
+        (c) => c.id === i.clusterId && ["Решено", "Закрыто"].includes(c.status),
+      ),
+    ),
+  );
+  const hot = filterItems(s, { queue: "hot" }, now);
+  assert.ok(hot.length > 0);
+  assert.ok(
+    hot.every((i) =>
+      s.clusters.some(
+        (c) =>
+          c.id === i.clusterId &&
+          !["Решено", "Закрыто"].includes(c.status) &&
+          priority(c, s.items, now).recent >= 3,
+      ),
+    ),
+  );
+});

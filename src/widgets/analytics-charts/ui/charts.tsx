@@ -19,10 +19,10 @@ import {
   Legend,
 } from "recharts";
 const colors = {
-  total: "#577cf0",
-  negative: "#e58c76",
-  neutral: "#b4b8ca",
-  positive: "#5bb69e",
+  total: "#23836b",
+  negative: "#c26b53",
+  neutral: "#a4b3aa",
+  positive: "#29865e",
 };
 export function TrendChart({
   data,
@@ -46,34 +46,36 @@ export function TrendChart({
         >
           <defs>
             <linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#5c7ee9" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#5c7ee9" stopOpacity={0.01} />
+              <stop offset="0%" stopColor="#23836b" stopOpacity={0.2} />
+              <stop offset="100%" stopColor="#23836b" stopOpacity={0.01} />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="#edf0f6" />
+          <CartesianGrid vertical={false} stroke="var(--border)" />
           <XAxis
             dataKey="date"
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 10, fill: "#95a2bb" }}
+            tick={{ fontSize: 10, fill: "var(--muted)" }}
             minTickGap={24}
           />
           <YAxis
             allowDecimals={false}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 10, fill: "#95a2bb" }}
+            tick={{ fontSize: 10, fill: "var(--muted)" }}
           />
           <Tooltip
             contentStyle={{
-              borderRadius: 8,
+              borderRadius: 5,
+              background: "var(--surface)",
+              color: "var(--ink)",
               border: "1px solid #e8edf3",
               fontSize: 12,
             }}
           />
           <Area
             isAnimationActive={false}
-            type="monotone"
+            type="linear"
             name={t("Все обращения")}
             dataKey="total"
             stroke={colors.total}
@@ -159,11 +161,11 @@ export function WorkloadChart({
             if (s?.activeLabel) onSelect(String(s.activeLabel));
           }}
         >
-          <CartesianGrid horizontal={false} stroke="#edf0f6" />
+          <CartesianGrid horizontal={false} stroke="var(--border)" />
           <XAxis
             type="number"
             allowDecimals={false}
-            tick={{ fontSize: 11, fill: "#8b99b2" }}
+            tick={{ fontSize: 11, fill: "var(--muted)" }}
           />
           <YAxis
             type="category"
@@ -172,14 +174,14 @@ export function WorkloadChart({
             tickFormatter={(value) => t(String(value))}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "#64748b" }}
+            tick={{ fontSize: 11, fill: "var(--muted)" }}
           />
           <Tooltip labelFormatter={(label) => t(String(label))} />
           <Bar
             isAnimationActive={false}
             name={t("Обращения")}
             dataKey="total"
-            fill="#657be0"
+            fill="#469174"
             radius={[0, 4, 4, 0]}
             barSize={17}
           />
@@ -208,7 +210,15 @@ export function DepartmentSentiment({
             tickFormatter={(v) => `${Math.round(v * 100)}%`}
             tick={{ fontSize: 10 }}
           />
-          <YAxis type="category" dataKey="name" hide />
+          <YAxis
+            type="category"
+            dataKey="name"
+            width={130}
+            tickFormatter={(value) => t(String(value))}
+            tickLine={false}
+            axisLine={false}
+            tick={{ fontSize: 10, fill: "var(--muted)" }}
+          />
           <Tooltip labelFormatter={(label) => t(String(label))} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Bar

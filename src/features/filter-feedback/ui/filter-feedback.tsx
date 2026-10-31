@@ -123,6 +123,18 @@ export function GlobalFilters({
           onChange={(v) => updateFilter("status", v)}
           options={["Новое", "Передано", "В работе", "Решено", "Закрыто"]}
         />
+        <Select
+          label={t("Все очереди")}
+          value={filters.queue}
+          onChange={(v) => updateFilter("queue", v)}
+          options={[
+            { value: "open", label: "Открытые проблемы" },
+            { value: "waiting", label: "Без назначения" },
+            { value: "hot", label: "Горячие за 24 часа" },
+            { value: "assigned", label: "Переданы службам" },
+            { value: "resolved", label: "Завершённые проблемы" },
+          ]}
+        />
         <div className="filter-spacer" />
         <label className="search-field">
           <Search size={13} />

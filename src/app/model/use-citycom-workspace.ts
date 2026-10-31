@@ -139,6 +139,7 @@ export function useCitycomWorkspace() {
     setFilters((f) => ({ ...f, ...patch }));
     setMobile(false);
     setSelected(null);
+    window.scrollTo(0, 0);
   }
   function updateFilter(key: keyof Filters, value: string) {
     setFilters((f) => ({ ...f, [key]: value }));

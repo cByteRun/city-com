@@ -12,3 +12,6 @@ playwright-report/
 .next-prod/
 .next-fsd/
 assets
+.next-design/
+.next-design-build/
+artifacts/

@@ -202,6 +202,7 @@ export function CityApp() {
             )}
             {page === "issues" && (
               <IssuesPage
+                queue={filters.queue}
                 state={state!}
                 items={items}
                 clusters={clusters}

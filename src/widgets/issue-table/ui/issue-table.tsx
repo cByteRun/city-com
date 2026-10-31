@@ -29,6 +29,7 @@ export function IssueTable({
             <th>{t("Городская проблема")}</th>
             {!compact && <th>{t("Подразделение")}</th>}
             <th>{t("Сигналы")}</th>
+            {compact && <th>{t("Статус")}</th>}
             {!compact && (
               <>
                 <th>{t("За 24 ч.")}</th>
@@ -86,6 +87,21 @@ export function IssueTable({
                     {t(p.independent)} {t("независимых")}
                   </small>
                 </td>
+                {compact && (
+                  <td>
+                    <Badge
+                      kind={
+                        c.status === "Решено" || c.status === "Закрыто"
+                          ? "positive"
+                          : c.status === "В работе"
+                            ? "blue"
+                            : "neutral"
+                      }
+                    >
+                      {t(c.status)}
+                    </Badge>
+                  </td>
+                )}
                 {!compact && (
                   <>
                     <td>
@@ -117,7 +133,10 @@ export function IssueTable({
                 )}
                 <td>
                   {compact ? (
-                    <Badge kind={p.label}>{t(priorityLabels[p.label])}</Badge>
+                    <div className="compact-priority">
+                      <Badge kind={p.label}>{t(priorityLabels[p.label])}</Badge>
+                      <small>{t("{0}/100", [p.score])}</small>
+                    </div>
                   ) : (
                     <ArrowRight size={14} />
                   )}

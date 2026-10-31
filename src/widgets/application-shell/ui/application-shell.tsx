@@ -112,6 +112,7 @@ export function ApplicationShell({
                 <button
                   key={id}
                   className={`nav-item ${page === id ? "active" : ""}`}
+                  aria-current={page === id ? "page" : undefined}
                   onClick={() => go(id)}
                 >
                   <Icon size={15} />
